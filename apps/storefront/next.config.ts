@@ -8,6 +8,9 @@ const STORE_DOMAINS = [
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  // Keep Prisma's query engine out of the Turbopack trace/bundle so it loads
+  // from node_modules at runtime instead of being mis-bundled on Vercel.
+  serverExternalPackages: ["@prisma/client", "prisma"],
   experimental: {
     serverActions: {
       allowedOrigins: STORE_DOMAINS,
