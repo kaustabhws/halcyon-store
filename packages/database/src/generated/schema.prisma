@@ -764,6 +764,9 @@ generator client {
   provider        = "prisma-client-js"
   output          = "../../src/generated"
   previewFeatures = ["prismaSchemaFolder"]
+  // "native" covers local dev; "rhel-openssl-3.0.x" is the engine Vercel's
+  // serverless runtime (Node 20, Amazon Linux) needs at runtime.
+  binaryTargets   = ["native", "rhel-openssl-3.0.x"]
 }
 
 datasource db {
