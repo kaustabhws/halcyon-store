@@ -2,7 +2,7 @@
  * Seed: platform vendor, RBAC, default warehouse, demo catalog.
  * Idempotent — safe to re-run; existing rows are upserted by their natural keys.
  */
-import { PrismaClient } from "../src/generated/index.js";
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 

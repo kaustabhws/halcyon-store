@@ -3,8 +3,8 @@ export type { Db } from "./client.ts";
 
 export * from "./repositories/index.ts";
 
-export type { Prisma } from "./generated/index.js";
+export type { Prisma } from "@prisma/client";
 export {
   PrismaClient,
   Prisma as PrismaTypes,
-} from "./generated/index.js";
+} from "@prisma/client";

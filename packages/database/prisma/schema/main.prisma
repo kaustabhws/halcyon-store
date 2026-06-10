@@ -4,10 +4,11 @@
 
 generator client {
   provider        = "prisma-client-js"
-  output          = "../../src/generated"
   previewFeatures = ["prismaSchemaFolder"]
+  // Default output (node_modules/.prisma/client) so Vercel + Next's
+  // serverExternalPackages can locate the query engine at runtime.
   // "native" covers local dev; "rhel-openssl-3.0.x" is the engine Vercel's
-  // serverless runtime (Node 20, Amazon Linux) needs at runtime.
+  // serverless runtime (Node 20, Amazon Linux) needs.
   binaryTargets   = ["native", "rhel-openssl-3.0.x"]
 }
 

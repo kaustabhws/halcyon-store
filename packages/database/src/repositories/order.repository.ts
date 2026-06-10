@@ -1,5 +1,5 @@
 import { prisma } from "../client.ts";
-import type { Prisma } from "../generated/index.js";
+import type { Prisma } from "@prisma/client";
 
 const orderInclude = {
   items: {
