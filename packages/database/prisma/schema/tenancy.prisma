@@ -1,0 +1,23 @@
+// Tenancy — single vendor at MVP. Every catalog/inventory/order/coupon row
+// carries vendorId so multi-vendor is a column-level change later, not a
+// schema rewrite.
+
+model Vendor {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String
+  isPlatform  Boolean  @default(false)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
+
+  products    Product[]
+  warehouses  Warehouse[]
+  orders      Order[]
+  coupons     Coupon[]
+  brands      Brand[]
+  categories  Category[]
+  attributes  Attribute[]
+  roleAssignments RoleAssignment[]
+}

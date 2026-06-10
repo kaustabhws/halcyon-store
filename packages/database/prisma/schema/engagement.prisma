@@ -1,0 +1,25 @@
+// Engagement domain — reviews. Q&A lands later.
+
+model Review {
+  id          String   @id @default(cuid())
+  productId   String
+  customerId  String
+  orderItemId String?  // verified-purchase signal
+  rating      Int      // 1..5
+  title       String?
+  body        String   @db.Text
+  status      String   @default("PENDING") // PENDING|APPROVED|REJECTED|SPAM
+  helpfulCount Int     @default(0)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
+
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  customer    Customer @relation(fields: [customerId], references: [id])
+
+  @@unique([productId, customerId])
+  @@index([productId, status, createdAt])
+  @@index([customerId])
+  @@index([deletedAt])
+}

@@ -1,0 +1,103 @@
+// Payment domain — provider-agnostic intent/transaction model.
+// Razorpay impl writes here; future Stripe etc. reuse the same tables.
+
+model PaymentIntent {
+  id                 String              @id @default(cuid())
+  orderId            String
+  provider           PaymentProvider
+  providerIntentId   String?             // razorpayOrderId etc.
+  amountMinor        BigInt
+  currency           String              @default("INR")
+  status             PaymentIntentStatus @default(REQUIRES_ACTION)
+  idempotencyKey     String              @unique
+  clientPayload      Json?
+
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+
+  order              Order               @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  attempts           PaymentAttempt[]
+
+  @@unique([provider, providerIntentId])
+  @@index([orderId])
+  @@index([status, createdAt])
+}
+
+model PaymentAttempt {
+  id              String              @id @default(cuid())
+  paymentIntentId String
+  attemptNumber   Int
+  status          PaymentIntentStatus
+  errorCode       String?
+  errorMessage    String?             @db.Text
+  providerPayload Json?
+
+  createdAt       DateTime            @default(now())
+
+  intent          PaymentIntent       @relation(fields: [paymentIntentId], references: [id], onDelete: Cascade)
+
+  @@index([paymentIntentId])
+}
+
+model PaymentTransaction {
+  id            String         @id @default(cuid())
+  orderId       String
+  provider      PaymentProvider
+  providerTxnId String
+  kind          PaymentTxnKind
+  amountMinor   BigInt
+  currency      String         @default("INR")
+  status        PaymentIntentStatus
+  capturedAt    DateTime?
+  raw           Json?
+
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  order         Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  refunds       Refund[]
+
+  @@unique([provider, providerTxnId])
+  @@index([orderId])
+  @@index([status, createdAt])
+}
+
+model Refund {
+  id                   String       @id @default(cuid())
+  orderId              String
+  paymentTransactionId String
+  amountMinor          BigInt
+  currency             String       @default("INR")
+  reason               String?
+  status               RefundStatus @default(PROCESSING)
+  providerRefundId     String?
+  processedAt          DateTime?
+
+  createdAt            DateTime     @default(now())
+  updatedAt            DateTime     @updatedAt
+
+  order                Order              @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  transaction          PaymentTransaction @relation(fields: [paymentTransactionId], references: [id])
+
+  @@index([orderId])
+}
+
+model WebhookEvent {
+  id              String        @id @default(cuid())
+  provider        PaymentProvider
+  providerEventId String
+  type            String
+  payload         Json
+  signatureValid  Boolean
+  status          WebhookStatus @default(PENDING)
+  attempts        Int           @default(0)
+  receivedAt      DateTime      @default(now())
+  processedAt     DateTime?
+  error           String?       @db.Text
+
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@unique([provider, providerEventId])
+  @@index([status, createdAt])
+}

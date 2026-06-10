@@ -1,0 +1,137 @@
+// Order domain — orders, items, timeline, fulfillment, shipments.
+// Orders snapshot product data at the time of purchase so subsequent
+// catalog edits don't mutate history.
+
+model Order {
+  id                String      @id @default(cuid())
+  orderNumber       String      @unique
+  vendorId          String
+  customerId        String
+  currency          String      @default("INR")
+
+  subtotalMinor     BigInt      @default(0)
+  discountMinor     BigInt      @default(0)
+  shippingMinor     BigInt      @default(0)
+  taxMinor          BigInt      @default(0)
+  totalMinor        BigInt      @default(0)
+
+  status            OrderStatus @default(PENDING)
+  fulfillmentStatus FulfillmentStatus @default(UNFULFILLED)
+  placedAt          DateTime    @default(now())
+  cancelledAt       DateTime?
+
+  shippingAddress   Json
+  billingAddress    Json?
+  couponCode        String?
+  notes             String?     @db.Text
+
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  deletedAt         DateTime?
+
+  vendor            Vendor      @relation(fields: [vendorId], references: [id])
+  customer          Customer    @relation(fields: [customerId], references: [id])
+
+  items             OrderItem[]
+  timeline          OrderTimelineEvent[]
+  fulfillments      Fulfillment[]
+  paymentIntents    PaymentIntent[]
+  paymentTransactions PaymentTransaction[]
+  refunds           Refund[]
+
+  @@index([customerId, createdAt])
+  @@index([status, createdAt])
+  @@index([vendorId, status])
+  @@index([deletedAt])
+}
+
+model OrderItem {
+  id              String   @id @default(cuid())
+  orderId         String
+  variantId       String
+  productSnapshot Json     // name, sku, image, brand, attributes — captured at order time
+  quantity        Int
+  unitPriceMinor  BigInt
+  discountMinor   BigInt   @default(0)
+  taxMinor        BigInt   @default(0)
+  totalMinor      BigInt
+  fulfillmentStatus FulfillmentStatus @default(UNFULFILLED)
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  order           Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  variant         Variant  @relation(fields: [variantId], references: [id])
+
+  shipmentItems   ShipmentItem[]
+
+  @@index([orderId])
+  @@index([variantId])
+}
+
+model OrderTimelineEvent {
+  id          String    @id @default(cuid())
+  orderId     String
+  type        String    // "order.placed", "order.confirmed", "payment.captured", ...
+  message     String?
+  payload     Json?
+  actorKind   ActorKind @default(SYSTEM)
+  actorId     String?
+
+  createdAt   DateTime  @default(now())
+
+  order       Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId, createdAt])
+}
+
+model Fulfillment {
+  id          String   @id @default(cuid())
+  orderId     String
+  warehouseId String?
+  status      FulfillmentStatus @default(UNFULFILLED)
+  shippedAt   DateTime?
+  deliveredAt DateTime?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  shipments   Shipment[]
+
+  @@index([orderId])
+}
+
+model Shipment {
+  id              String         @id @default(cuid())
+  fulfillmentId   String
+  carrier         String
+  service         String
+  trackingNumber  String         @unique
+  trackingUrl     String?
+  labelUrl        String?
+  status          ShipmentStatus @default(PENDING)
+  shippedAt       DateTime?
+  deliveredAt     DateTime?
+
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  fulfillment     Fulfillment    @relation(fields: [fulfillmentId], references: [id], onDelete: Cascade)
+  items           ShipmentItem[]
+
+  @@index([fulfillmentId])
+}
+
+model ShipmentItem {
+  id          String   @id @default(cuid())
+  shipmentId  String
+  orderItemId String
+  quantity    Int
+
+  shipment    Shipment @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
+  orderItem   OrderItem @relation(fields: [orderItemId], references: [id], onDelete: Cascade)
+
+  @@index([shipmentId])
+  @@index([orderItemId])
+}

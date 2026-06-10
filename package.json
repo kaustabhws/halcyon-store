@@ -1,26 +1,33 @@
 {
-  "name": "ecommerce",
-  "version": "0.1.0",
+  "name": "ecom",
   "private": true,
+  "version": "0.1.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "tooling/*"
+  ],
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint"
-  },
-  "dependencies": {
-    "next": "16.2.7",
-    "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "dev": "turbo run dev",
+    "dev:storefront": "turbo run dev --filter=storefront",
+    "dev:admin": "turbo run dev --filter=admin",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "clean": "turbo run clean",
+    "db:generate": "npm run db:generate -w @ecom/database",
+    "db:push": "npm run db:push -w @ecom/database",
+    "db:migrate": "npm run db:migrate -w @ecom/database",
+    "db:seed": "npm run db:seed -w @ecom/database",
+    "db:studio": "npm run db:studio -w @ecom/database"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "eslint": "^9",
-    "eslint-config-next": "16.2.7",
-    "tailwindcss": "^4",
-    "typescript": "^5"
-  }
+    "turbo": "^2.5.0",
+    "typescript": "^5.7.2"
+  },
+  "engines": {
+    "node": ">=20.11.0",
+    "npm": ">=10.0.0"
+  },
+  "packageManager": "npm@11.9.0"
 }

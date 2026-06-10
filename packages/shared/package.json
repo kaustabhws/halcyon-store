@@ -1,0 +1,26 @@
+{
+  "name": "@ecom/shared",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./money": "./src/money.ts",
+    "./ids": "./src/ids.ts",
+    "./errors": "./src/errors.ts",
+    "./result": "./src/result.ts",
+    "./coupons": "./src/coupons.ts",
+    "./brand": "./src/brand.ts"
+  },
+  "scripts": {
+    "lint": "echo 'ok'",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf .turbo dist"
+  },
+  "devDependencies": {
+    "@ecom/tsconfig": "*",
+    "typescript": "^5"
+  }
+}

@@ -1,0 +1,39 @@
+// Pricing domain — simplified for MVP. Single price list per vendor;
+// variant-level prices with optional compareAt for "sale" display.
+// Future tier/group/region pricing fits this shape without rewriting.
+
+model PriceList {
+  id        String   @id @default(cuid())
+  vendorId  String
+  code      String
+  name      String
+  currency  String   @default("INR")
+  isDefault Boolean  @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+
+  prices    Price[]
+
+  @@unique([vendorId, code])
+  @@index([deletedAt])
+}
+
+model Price {
+  id                  String   @id @default(cuid())
+  priceListId         String
+  variantId           String
+  amountMinor         BigInt
+  compareAtAmountMinor BigInt?
+  currency            String   @default("INR")
+
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  priceList           PriceList @relation(fields: [priceListId], references: [id], onDelete: Cascade)
+  variant             Variant   @relation(fields: [variantId], references: [id], onDelete: Cascade)
+
+  @@unique([priceListId, variantId])
+  @@index([variantId])
+}

@@ -1,0 +1,221 @@
+// Catalog domain — categories (nested), brands, products, variants,
+// attributes, media. Translation tables present but unused at MVP
+// (en-IN only).
+
+model Category {
+  id          String     @id @default(cuid())
+  vendorId    String
+  parentId    String?
+  slug        String
+  name        String
+  description String?    @db.Text
+  position    Int        @default(0)
+  imageUrl    String?
+
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  deletedAt   DateTime?
+
+  vendor      Vendor     @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+  parent      Category?  @relation("CategoryToCategory", fields: [parentId], references: [id], onDelete: SetNull)
+  children    Category[] @relation("CategoryToCategory")
+  products    ProductCategory[]
+
+  @@unique([vendorId, slug])
+  @@index([parentId])
+  @@index([deletedAt])
+}
+
+model Brand {
+  id          String   @id @default(cuid())
+  vendorId    String
+  slug        String
+  name        String
+  description String?  @db.Text
+  logoUrl     String?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
+
+  vendor      Vendor   @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+  products    Product[]
+
+  @@unique([vendorId, slug])
+  @@index([deletedAt])
+}
+
+model Product {
+  id              String        @id @default(cuid())
+  vendorId        String
+  kind            ProductKind   @default(PHYSICAL)
+  status          ProductStatus @default(DRAFT)
+  brandId         String?
+  slug            String
+  name            String
+  shortDescription String?      @db.Text
+  description     String?       @db.Text
+  hasVariants     Boolean       @default(false)
+  /// When true, ProductMedia rows tagged with an attribute value are filtered
+  /// by the currently-selected value of `imageAttribute` on the storefront.
+  /// When false, all images show for every variant (single shared gallery).
+  useVariantImages Boolean      @default(false)
+  /// The attribute whose values drive per-image grouping (e.g. Color). When
+  /// set with useVariantImages, the storefront swaps images as the customer
+  /// changes this attribute's value. Null = no attribute chosen yet.
+  imageAttributeId String?
+  isFeatured      Boolean       @default(false)
+  defaultVariantId String?      @unique
+
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  deletedAt       DateTime?
+
+  vendor          Vendor        @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+  brand           Brand?        @relation(fields: [brandId], references: [id], onDelete: SetNull)
+  defaultVariant  Variant?      @relation("ProductDefaultVariant", fields: [defaultVariantId], references: [id], onDelete: SetNull)
+  imageAttribute  Attribute?    @relation("ProductImageAttribute", fields: [imageAttributeId], references: [id], onDelete: SetNull)
+
+  variants        Variant[]     @relation("ProductVariants")
+  categories      ProductCategory[]
+  media           ProductMedia[]
+  reviews         Review[]
+  wishlistItems   WishlistItem[]
+  specifications  Specification[]
+
+  @@unique([vendorId, slug])
+  @@index([status, isFeatured, createdAt])
+  @@index([brandId])
+  @@index([deletedAt])
+}
+
+model ProductCategory {
+  productId   String
+  categoryId  String
+  position    Int      @default(0)
+
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  category    Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([productId, categoryId])
+  @@index([categoryId])
+}
+
+model ProductMedia {
+  id           String   @id @default(cuid())
+  productId    String
+  /// Deprecated for the new image model — kept for backward compatibility.
+  /// New per-attribute images use `attributeValueId` instead.
+  variantId    String?
+  /// When set, this image belongs to a specific attribute value (e.g. the
+  /// "Black" value of the Color attribute). The storefront shows it when the
+  /// customer selects that value. Null = shared across all values.
+  attributeValueId String?
+  url          String
+  altText      String?
+  position     Int      @default(0)
+  isPrimary    Boolean  @default(false)
+  cloudinaryId String?
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  product        Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
+  variant        Variant?        @relation(fields: [variantId], references: [id], onDelete: SetNull)
+  attributeValue AttributeValue? @relation(fields: [attributeValueId], references: [id], onDelete: SetNull)
+
+  @@index([productId, position])
+  @@index([variantId])
+  @@index([attributeValueId])
+}
+
+model Variant {
+  id          String   @id @default(cuid())
+  productId   String
+  sku         String
+  barcode     String?
+  name        String?  // e.g. "UK 10 / Black"
+  weightGrams Int?
+  isDefault   Boolean  @default(false)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
+
+  product     Product  @relation("ProductVariants", fields: [productId], references: [id], onDelete: Cascade)
+  defaultForProduct Product? @relation("ProductDefaultVariant")
+
+  prices      Price[]
+  inventory   InventoryLevel[]
+  attributes  VariantAttributeValue[]
+  orderItems  OrderItem[]
+  cartItems   CartItem[]
+  reservations InventoryReservation[]
+  movements   InventoryMovement[]
+  media       ProductMedia[]
+
+  @@unique([productId, sku])
+  @@index([barcode])
+  @@index([deletedAt])
+}
+
+model Attribute {
+  id        String        @id @default(cuid())
+  vendorId  String
+  code      String        // "color", "size"
+  label     String
+  kind      AttributeKind @default(LIST)
+
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  vendor    Vendor        @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+  values    AttributeValue[]
+  imageProducts Product[]   @relation("ProductImageAttribute")
+
+  @@unique([vendorId, code])
+}
+
+model AttributeValue {
+  id          String   @id @default(cuid())
+  attributeId String
+  value       String   // canonical (lowercase) — "black", "uk-10"
+  label       String   // human — "Black", "UK 10"
+  swatchHex   String?
+  position    Int      @default(0)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  attribute   Attribute @relation(fields: [attributeId], references: [id], onDelete: Cascade)
+  variants    VariantAttributeValue[]
+  media       ProductMedia[]
+
+  @@unique([attributeId, value])
+}
+
+model VariantAttributeValue {
+  variantId        String
+  attributeValueId String
+
+  variant          Variant         @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  attributeValue   AttributeValue  @relation(fields: [attributeValueId], references: [id], onDelete: Cascade)
+
+  @@id([variantId, attributeValueId])
+  @@index([attributeValueId])
+}
+
+model Specification {
+  id        String   @id @default(cuid())
+  productId String
+  key       String
+  value     String   @db.Text
+  position  Int      @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId, position])
+}

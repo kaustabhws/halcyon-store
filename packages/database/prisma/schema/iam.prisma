@@ -1,0 +1,93 @@
+// IAM domain — admins managed via Clerk; we cache the Clerk userId and
+// own roles + permissions ourselves so RBAC stays platform-controlled.
+
+model Admin {
+  id            String    @id @default(cuid())
+  clerkUserId   String    @unique
+  email         String    @unique
+  firstName     String?
+  lastName      String?
+  status        AdminStatus @default(ACTIVE)
+  lastLoginAt   DateTime?
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  deletedAt     DateTime?
+
+  roleAssignments RoleAssignment[]
+
+  @@index([deletedAt])
+}
+
+model Role {
+  id          String      @id @default(cuid())
+  name        String      @unique
+  description String?
+  isSystem    Boolean     @default(false)
+
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  permissions RolePermission[]
+  assignments RoleAssignment[]
+}
+
+model Permission {
+  id          String      @id @default(cuid())
+  key         String      @unique // e.g. "order.refund"
+  resource    String
+  action      String
+  description String?
+
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  roles       RolePermission[]
+}
+
+model RolePermission {
+  roleId       String
+  permissionId String
+
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+  @@index([permissionId])
+}
+
+model RoleAssignment {
+  id        String   @id @default(cuid())
+  adminId   String
+  roleId    String
+  vendorId  String?  // null = platform-wide; ready for multi-vendor
+
+  createdAt DateTime @default(now())
+
+  admin     Admin    @relation(fields: [adminId], references: [id], onDelete: Cascade)
+  role      Role     @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  vendor    Vendor?  @relation(fields: [vendorId], references: [id], onDelete: SetNull)
+
+  @@unique([adminId, roleId, vendorId])
+  @@index([adminId])
+  @@index([roleId])
+}
+
+// Audit log — everything mutating in admin writes one row here.
+model AuditLog {
+  id          String     @id @default(cuid())
+  actorKind   ActorKind
+  actorId     String?
+  entityType  String
+  entityId    String
+  action      String
+  before      Json?
+  after       Json?
+  ipAddress   String?
+  userAgent   String?    @db.Text
+
+  createdAt   DateTime   @default(now())
+
+  @@index([actorId, createdAt])
+  @@index([entityType, entityId, createdAt])
+}

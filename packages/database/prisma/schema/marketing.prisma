@@ -1,0 +1,45 @@
+// Marketing domain — minimal MVP: coupons + redemption tracking.
+// Promotions / campaigns / referrals land in later phases on the same shape.
+
+model Coupon {
+  id                String         @id @default(cuid())
+  vendorId          String
+  code              String         @unique
+  type              CouponType
+  value             Int            // percent (0-100) OR fixed amount in minor units
+  currency          String?        // null for PERCENT/FREE_SHIPPING
+  scope             PromotionScope @default(CART)
+  targetIds         Json?
+  minSubtotalMinor  BigInt?
+  maxRedemptions    Int?
+  perCustomerLimit  Int?
+  validFrom         DateTime?
+  validTo           DateTime?
+  active            Boolean        @default(true)
+
+  redemptionsCount  Int            @default(0)
+
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+  deletedAt         DateTime?
+
+  vendor            Vendor         @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+  redemptions       CouponRedemption[]
+
+  @@index([active, validFrom, validTo])
+  @@index([deletedAt])
+}
+
+model CouponRedemption {
+  id          String   @id @default(cuid())
+  couponId    String
+  customerId  String
+  orderId     String
+
+  createdAt   DateTime @default(now())
+
+  coupon      Coupon   @relation(fields: [couponId], references: [id], onDelete: Cascade)
+
+  @@unique([couponId, orderId])
+  @@index([customerId])
+}

@@ -1,36 +1,41 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Ecommerce Monorepo
 
-## Getting Started
+Production-grade ecommerce platform — Next.js 16, React 19, Prisma, PostgreSQL, Meilisearch, Razorpay, Cloudinary.
 
-First, run the development server:
+## Apps
+
+- `apps/storefront` — customer-facing store (`store.localhost:3000` → `store.domain.com`)
+- `apps/admin` — admin dashboard (`admin.localhost:3001` → `admin.domain.com`)
+
+## Packages
+
+- `@ecom/database` — Prisma schema, client, repositories
+- `@ecom/shared` — zod schemas, money types, branded IDs, errors
+- `@ecom/config` — env loader (zod-validated)
+- `@ecom/auth` — auth provider abstraction (Auth.js for storefront, Clerk for admin)
+- `@ecom/payments` — payment gateway abstraction (Razorpay impl)
+- `@ecom/search` — Meilisearch abstraction
+- `@ecom/analytics` — event ingest + reporting
+- `@ecom/ui` — shadcn primitives + brand tokens
+- `@ecom/email` — email provider abstraction (Console MVP)
+- `@ecom/shipping` — shipping provider abstraction (Mock MVP)
+- `@ecom/observability` — logger, OpenTelemetry hooks
+- `@ecom/jobs` — background job queue abstraction
+
+## Getting started
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Storefront: http://store.localhost:3000
+Admin: http://admin.localhost:3001
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Local infra
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+docker compose -f infra/docker/docker-compose.yml up -d
+```
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Brings up Postgres 16, Redis 7, Meilisearch.

@@ -1,0 +1,147 @@
+// Enums shared across domains.
+
+enum CustomerStatus {
+  ACTIVE
+  SUSPENDED
+  DELETED
+}
+
+enum AddressType {
+  BILLING
+  SHIPPING
+  BOTH
+}
+
+enum AdminStatus {
+  ACTIVE
+  INVITED
+  SUSPENDED
+}
+
+enum ProductKind {
+  PHYSICAL
+  DIGITAL
+  SERVICE
+  SUBSCRIPTION
+  BUNDLE
+  KIT
+  COURSE
+}
+
+enum ProductStatus {
+  DRAFT
+  ACTIVE
+  ARCHIVED
+}
+
+enum AttributeKind {
+  LIST
+  TEXT
+  NUMBER
+  SWATCH
+}
+
+enum StockReason {
+  PURCHASE
+  SALE
+  RETURN
+  ADJUSTMENT
+  RESERVATION
+  RELEASE
+  DAMAGE
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  RETURNED
+  REFUNDED
+  FAILED
+}
+
+enum FulfillmentStatus {
+  UNFULFILLED
+  PARTIAL
+  FULFILLED
+}
+
+enum ShipmentStatus {
+  PENDING
+  LABELED
+  IN_TRANSIT
+  OUT_FOR_DELIVERY
+  DELIVERED
+  FAILED
+  RETURNED
+}
+
+enum PaymentProvider {
+  RAZORPAY
+  STRIPE
+  PAYPAL
+  CASHFREE
+  WALLET
+  COD
+  GIFT_CARD
+  STORE_CREDIT
+}
+
+enum PaymentIntentStatus {
+  REQUIRES_ACTION
+  PROCESSING
+  AUTHORIZED
+  CAPTURED
+  FAILED
+  REFUNDED
+  PARTIAL_REFUND
+}
+
+enum PaymentTxnKind {
+  AUTH
+  CAPTURE
+  REFUND
+  VOID
+}
+
+enum WebhookStatus {
+  PENDING
+  DELIVERED
+  FAILED
+  DEAD_LETTER
+}
+
+enum CouponType {
+  PERCENT
+  FIXED
+  FREE_SHIPPING
+}
+
+enum PromotionScope {
+  CART
+  PRODUCT
+  CATEGORY
+  BRAND
+  COLLECTION
+}
+
+enum RefundStatus {
+  PROCESSING
+  SUCCEEDED
+  FAILED
+}
+
+enum ActorKind {
+  CUSTOMER
+  ADMIN
+  SYSTEM
+}
+
+enum OutboxStatus {
+  PENDING
+  PROCESSED
+  FAILED
+}

@@ -1,0 +1,13 @@
+{
+  "name": "@ecom/eslint-config",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./next": "./next.mjs",
+    "./node": "./node.mjs"
+  },
+  "peerDependencies": {
+    "eslint": "^9.0.0"
+  }
+}

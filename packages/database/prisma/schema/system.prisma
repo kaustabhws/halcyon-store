@@ -1,0 +1,42 @@
+// System domain — outbox (events), idempotency keys, settings.
+
+model OutboxEvent {
+  id            String       @id @default(cuid())
+  aggregateType String       // "order", "product", "payment"...
+  aggregateId   String
+  type          String       // "order.placed", "product.updated"...
+  payload       Json
+  status        OutboxStatus @default(PENDING)
+  attempts      Int          @default(0)
+  processedAt   DateTime?
+  error         String?      @db.Text
+
+  createdAt     DateTime     @default(now())
+
+  @@index([status, createdAt])
+  @@index([aggregateType, aggregateId])
+}
+
+model IdempotencyKey {
+  key         String   @id
+  scope       String
+  requestHash String
+  response    Json?
+  createdAt   DateTime @default(now())
+  expiresAt   DateTime
+
+  @@index([expiresAt])
+}
+
+model Setting {
+  id        String   @id @default(cuid())
+  vendorId  String?
+  scope     String   @default("PLATFORM")
+  key       String
+  value     Json
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([scope, vendorId, key])
+}
