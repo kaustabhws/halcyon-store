@@ -15,6 +15,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/lib/format";
 import {
+  cloudinaryApiKey,
   cloudinaryCloudName,
   isCloudinaryConfigured,
 } from "@/lib/cloudinary";
@@ -166,6 +167,7 @@ export default async function ProductDetailPage({
                 attributeValueId: m.attributeValueId,
               }))}
               cloudName={cloudinaryCloudName()}
+              cloudinaryApiKey={cloudinaryApiKey()}
               cloudinaryConfigured={isCloudinaryConfigured()}
             />
           </CardContent>

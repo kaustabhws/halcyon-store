@@ -5,7 +5,7 @@ import { formatPrice } from "@/lib/format";
 
 const PUBLIC_ORIGIN =
   process.env.NEXT_PUBLIC_SITE_URL ??
-  (process.env.NEXTAUTH_URL?.replace(/\/$/, "") ?? "http://store.localhost:3000");
+  (process.env.NEXTAUTH_URL?.replace(/\/$/, "") ?? "http://localhost:3000");
 
 /**
  * Send the order-confirmation email. Looks up the order with the data the

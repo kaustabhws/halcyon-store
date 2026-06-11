@@ -1,10 +1,10 @@
 import type { NextConfig } from "next";
 
 const ADMIN_DOMAINS = [
-  "admin.localhost:3001",
-  "admin.localhost",
-  process.env.ADMIN_PUBLIC_DOMAIN ?? "admin.example.com",
-];
+  "localhost:3001",
+  "localhost",
+  process.env.ADMIN_PUBLIC_DOMAIN,
+].filter(Boolean) as string[];
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
@@ -20,6 +20,7 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       { protocol: "https", hostname: "res.cloudinary.com" },
       { protocol: "https", hostname: "images.unsplash.com" },
+      { protocol: "https", hostname: "cdn.dummyjson.com" },
     ],
   },
 };

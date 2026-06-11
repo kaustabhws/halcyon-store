@@ -1,10 +1,18 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label, Textarea, FieldError } from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { ImageUploader } from "@/components/media/image-uploader";
 import {
   createCategoryAction,
   updateCategoryAction,
@@ -21,16 +29,39 @@ type Mode =
         slug: string;
         description: string | null;
         imageUrl: string | null;
+        parentId: string | null;
         position: number;
       };
     };
 
-export function CategoryForm({ state }: { state: Mode }) {
+const NO_PARENT = "__none__";
+
+export function CategoryForm({
+  state,
+  cloudinary,
+  parentOptions,
+}: {
+  state: Mode;
+  cloudinary: { cloudName: string | null; apiKey: string | null; configured: boolean };
+  parentOptions: { id: string; name: string }[];
+}) {
   const isEdit = state.mode === "edit";
   const [formState, formAction, pending] = useActionState<CategoryFormState | undefined, FormData>(
     isEdit ? updateCategoryAction : createCategoryAction,
     undefined,
   );
+  const [imageUrl, setImageUrl] = useState<string>(
+    isEdit ? state.defaults.imageUrl ?? "" : "",
+  );
+  const [parentId, setParentId] = useState<string>(
+    isEdit ? state.defaults.parentId ?? "" : "",
+  );
+
+  // A category can't be its own parent; hide it from the options when editing.
+  const options = parentOptions.filter(
+    (o) => !(isEdit && o.id === state.categoryId),
+  );
+
 
   return (
     <form action={formAction} className="space-y-4 rounded-lg border border-zinc-200 bg-background p-5 dark:border-zinc-800">
@@ -71,16 +102,47 @@ export function CategoryForm({ state }: { state: Mode }) {
           className="mt-1.5"
         />
       </div>
+      <div>
+        <Label>Image</Label>
+        <p className="mb-1.5 mt-0.5 text-xs text-muted-foreground">
+          Shown on the storefront homepage collections. Required.
+        </p>
+        <input type="hidden" name="imageUrl" value={imageUrl} />
+        <ImageUploader
+          cloudName={cloudinary.cloudName}
+          apiKey={cloudinary.apiKey}
+          configured={cloudinary.configured}
+          folder="ecom/categories"
+          value={imageUrl || null}
+          onUploaded={(img) => setImageUrl(img.url)}
+          onClear={() => setImageUrl("")}
+        />
+        <FieldError messages={formState?.fieldErrors?.imageUrl} />
+      </div>
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <Label htmlFor="imageUrl">Image URL (optional)</Label>
-          <Input
-            id="imageUrl"
-            name="imageUrl"
-            type="url"
-            defaultValue={isEdit ? state.defaults.imageUrl ?? "" : ""}
-            className="mt-1.5"
-          />
+          <Label htmlFor="parentId">Parent category</Label>
+          <p className="mb-1.5 mt-0.5 text-xs text-muted-foreground">
+            Optional. Nest this under a top-level category (max 2 levels).
+          </p>
+          <input type="hidden" name="parentId" value={parentId} />
+          <Select
+            value={parentId || NO_PARENT}
+            onValueChange={(v) => setParentId(v === NO_PARENT ? "" : v)}
+          >
+            <SelectTrigger id="parentId" className="w-full">
+              <SelectValue placeholder="None (top-level)" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={NO_PARENT}>None (top-level)</SelectItem>
+              {options.map((o) => (
+                <SelectItem key={o.id} value={o.id}>
+                  {o.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <FieldError messages={formState?.fieldErrors?.parentId} />
         </div>
         <div>
           <Label htmlFor="position">Position</Label>
@@ -103,7 +165,7 @@ export function CategoryForm({ state }: { state: Mode }) {
       ) : null}
 
       <div className="flex items-center gap-2">
-        <Button type="submit" disabled={pending}>
+        <Button type="submit" disabled={pending || !imageUrl}>
           {pending ? "Saving…" : isEdit ? "Save changes" : "Create category"}
         </Button>
         <Button asChild type="button" variant="outline">

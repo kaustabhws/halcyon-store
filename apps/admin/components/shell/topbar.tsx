@@ -8,9 +8,11 @@ import { ModeToggle } from "@/components/theme/mode-toggle";
 export function AdminTopbar({
   user,
   isMock,
+  storefrontUrl,
 }: {
   user: { fullName: string | null; email: string };
   isMock: boolean;
+  storefrontUrl: string;
 }) {
   return (
     <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center gap-3 border-b bg-background/80 px-4 backdrop-blur-xl sm:px-6">
@@ -31,7 +33,7 @@ export function AdminTopbar({
           </Badge>
         ) : null}
         <ModeToggle />
-        <TopbarUser user={user} isMock={isMock} />
+        <TopbarUser user={user} isMock={isMock} storefrontUrl={storefrontUrl} />
       </div>
     </header>
   );

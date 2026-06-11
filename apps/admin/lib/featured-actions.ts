@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { requireAdmin, requirePermission } from "@/lib/admin-auth";
+import { HERO_DESIGNS, HERO_SETTING_KEYS } from "@ecom/shared/hero";
 
 export type FeaturedActionResult = { ok: true } | { ok: false; error: string };
 
@@ -12,9 +13,42 @@ const ToggleFeaturedSchema = z.object({
   featured: z.enum(["true", "false"]),
 });
 
-const SetHeroSchema = z.object({
-  productId: z.string().min(1).or(z.literal("")),
+const HeroConfigSchema = z.object({
+  design: z.enum(HERO_DESIGNS),
+  productId: z.string().optional().default(""),
+  text: z.object({
+    eyebrow: z.string().max(80).optional().default(""),
+    headlineLead: z.string().max(120).optional().default(""),
+    headlineEmphasis: z.string().max(120).optional().default(""),
+    subtext: z.string().max(400).optional().default(""),
+    primaryLabel: z.string().max(40).optional().default(""),
+    primaryHref: z.string().max(200).optional().default(""),
+    secondaryLabel: z.string().max(40).optional().default(""),
+    secondaryHref: z.string().max(200).optional().default(""),
+  }),
 });
+
+const SCOPE = "PLATFORM";
+
+async function upsertSetting(key: string, value: unknown): Promise<void> {
+  const existing = await prisma.setting.findFirst({
+    where: { scope: SCOPE, vendorId: null, key },
+  });
+  if (existing) {
+    await prisma.setting.update({
+      where: { id: existing.id },
+      data: { value: value as never },
+    });
+  } else {
+    await prisma.setting.create({
+      data: { scope: SCOPE, key, value: value as never },
+    });
+  }
+}
+
+async function deleteSetting(key: string): Promise<void> {
+  await prisma.setting.deleteMany({ where: { scope: SCOPE, vendorId: null, key } });
+}
 
 export async function toggleFeaturedAction(
   formData: FormData,
@@ -42,7 +76,12 @@ export async function toggleFeaturedAction(
   return { ok: true };
 }
 
-export async function setHeroProductAction(
+/**
+ * Persist the full homepage hero config: which design to render, the hero
+ * product (used by image-based designs), and the editable text (used by the
+ * text-based designs). Each lands in its own Setting row.
+ */
+export async function setHeroConfigAction(
   formData: FormData,
 ): Promise<FeaturedActionResult> {
   const admin = await requireAdmin();
@@ -52,32 +91,25 @@ export async function setHeroProductAction(
     return { ok: false, error: e instanceof Error ? e.message : "Permission denied" };
   }
 
-  const parsed = SetHeroSchema.safeParse({
-    productId: formData.get("productId"),
-  });
+  const raw = formData.get("config");
+  let json: unknown;
+  try {
+    json = JSON.parse(typeof raw === "string" ? raw : "");
+  } catch {
+    return { ok: false, error: "Invalid input" };
+  }
+
+  const parsed = HeroConfigSchema.safeParse(json);
   if (!parsed.success) return { ok: false, error: "Invalid input" };
 
-  const key = "homepage.heroProductId";
-  const value = parsed.data.productId || null;
+  await upsertSetting(HERO_SETTING_KEYS.design, parsed.data.design);
+  await upsertSetting(HERO_SETTING_KEYS.text, parsed.data.text);
 
-  if (value) {
-    const existing = await prisma.setting.findFirst({
-      where: { scope: "PLATFORM", vendorId: null, key },
-    });
-    if (existing) {
-      await prisma.setting.update({
-        where: { id: existing.id },
-        data: { value: value as unknown as never },
-      });
-    } else {
-      await prisma.setting.create({
-        data: { scope: "PLATFORM", key, value: value as unknown as never },
-      });
-    }
+  const productId = parsed.data.productId.trim();
+  if (productId) {
+    await upsertSetting(HERO_SETTING_KEYS.productId, productId);
   } else {
-    await prisma.setting.deleteMany({
-      where: { scope: "PLATFORM", vendorId: null, key },
-    });
+    await deleteSetting(HERO_SETTING_KEYS.productId);
   }
 
   revalidatePath("/products/featured");

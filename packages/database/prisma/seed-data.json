@@ -1,0 +1,2374 @@
+{
+  "brands": [
+    {
+      "slug": "annibale-colombo",
+      "name": "Annibale Colombo"
+    },
+    {
+      "slug": "chic-cosmetics",
+      "name": "Chic Cosmetics"
+    },
+    {
+      "slug": "classic-wear",
+      "name": "Classic Wear"
+    },
+    {
+      "slug": "dior",
+      "name": "Dior"
+    },
+    {
+      "slug": "fashion-shades",
+      "name": "Fashion Shades"
+    },
+    {
+      "slug": "gigabyte",
+      "name": "Gigabyte"
+    },
+    {
+      "slug": "glamour-beauty",
+      "name": "Glamour Beauty"
+    },
+    {
+      "slug": "jockey",
+      "name": "Jockey"
+    },
+    {
+      "slug": "lor-al-paris",
+      "name": "L'Oréal Paris"
+    },
+    {
+      "slug": "levis",
+      "name": "Levi's"
+    },
+    {
+      "slug": "longines",
+      "name": "Longines"
+    },
+    {
+      "slug": "nike",
+      "name": "Nike"
+    },
+    {
+      "slug": "olay",
+      "name": "Olay"
+    },
+    {
+      "slug": "puma",
+      "name": "Puma"
+    }
+  ],
+  "parents": [
+    {
+      "slug": "men",
+      "name": "Men",
+      "description": "Menswear, footwear and accessories.",
+      "position": 0,
+      "imageUrl": "https://cdn.dummyjson.com/product-images/mens-shirts/gigabyte-aorus-men-tshirt/1.webp"
+    },
+    {
+      "slug": "women",
+      "name": "Women",
+      "description": "Womenswear, lingerie and jewelry.",
+      "position": 1,
+      "imageUrl": "https://cdn.dummyjson.com/product-images/tops/gray-dress/1.webp"
+    },
+    {
+      "slug": "beauty",
+      "name": "Beauty",
+      "description": "Skincare, makeup and fragrance.",
+      "position": 2,
+      "imageUrl": "https://cdn.dummyjson.com/product-images/skin-care/olay-ultra-moisture-shea-butter-body-wash/1.webp"
+    },
+    {
+      "slug": "home",
+      "name": "Home",
+      "description": "For every corner of your home.",
+      "position": 3,
+      "imageUrl": "https://cdn.dummyjson.com/product-images/furniture/annibale-colombo-bed/1.webp"
+    }
+  ],
+  "children": [
+    {
+      "slug": "mens-t-shirts",
+      "name": "T-Shirts",
+      "parent": "men",
+      "position": 0,
+      "imageUrl": "https://cdn.dummyjson.com/product-images/mens-shirts/gigabyte-aorus-men-tshirt/1.webp",
+      "description": "T-Shirts for the men collection."
+    },
+    {
+      "slug": "mens-shirts",
+      "name": "Shirts",
+      "parent": "men",
+      "position": 1,
+      "imageUrl": "https://cdn.dummyjson.com/product-images/mens-shirts/man-plaid-shirt/1.webp",
+      "description": "Shirts for the men collection."
+    },
+    {
+      "slug": "mens-jeans",
+      "name": "Jeans",
+      "parent": "men",
+      "position": 2,
+      "imageUrl": "https://images.unsplash.com/photo-1542272604-787c3835535d?w=1200",
+      "description": "Jeans for the men collection."
+    },
+    {
+      "slug": "mens-shoes",
+      "name": "Shoes",
+      "parent": "men",
+      "position": 3,
+      "imageUrl": "https://cdn.dummyjson.com/product-images/mens-shoes/nike-air-jordan-1-red-and-black/1.webp",
+      "description": "Shoes for the men collection."
+    },
+    {
+      "slug": "mens-watches",
+      "name": "Watches",
+      "parent": "men",
+      "position": 4,
+      "imageUrl": "https://cdn.dummyjson.com/product-images/mens-watches/longines-master-collection/1.webp",
+      "description": "Watches for the men collection."
+    },
+    {
+      "slug": "mens-accessories",
+      "name": "Accessories",
+      "parent": "men",
+      "position": 5,
+      "imageUrl": "https://cdn.dummyjson.com/product-images/sunglasses/classic-sun-glasses/1.webp",
+      "description": "Accessories for the men collection."
+    },
+    {
+      "slug": "womens-tops",
+      "name": "Tops",
+      "parent": "women",
+      "position": 6,
+      "imageUrl": "https://cdn.dummyjson.com/product-images/tops/gray-dress/1.webp",
+      "description": "Tops for the women collection."
+    },
+    {
+      "slug": "womens-bras",
+      "name": "Bras",
+      "parent": "women",
+      "position": 7,
+      "imageUrl": "https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=1200",
+      "description": "Bras for the women collection."
+    },
+    {
+      "slug": "womens-lingerie",
+      "name": "Lingerie",
+      "parent": "women",
+      "position": 8,
+      "imageUrl": "https://cdn.dummyjson.com/product-images/womens-dresses/corset-with-black-skirt/1.webp",
+      "description": "Lingerie for the women collection."
+    },
+    {
+      "slug": "womens-jewelry",
+      "name": "Jewelry",
+      "parent": "women",
+      "position": 9,
+      "imageUrl": "https://cdn.dummyjson.com/product-images/womens-jewellery/green-crystal-earring/1.webp",
+      "description": "Jewelry for the women collection."
+    },
+    {
+      "slug": "womens-jeans",
+      "name": "Jeans",
+      "parent": "women",
+      "position": 10,
+      "imageUrl": "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=1200",
+      "description": "Jeans for the women collection."
+    },
+    {
+      "slug": "beauty-skincare",
+      "name": "Skincare",
+      "parent": "beauty",
+      "position": 11,
+      "imageUrl": "https://cdn.dummyjson.com/product-images/skin-care/olay-ultra-moisture-shea-butter-body-wash/1.webp",
+      "description": "Skincare for the beauty collection."
+    },
+    {
+      "slug": "beauty-makeup",
+      "name": "Makeup",
+      "parent": "beauty",
+      "position": 12,
+      "imageUrl": "https://cdn.dummyjson.com/product-images/beauty/eyeshadow-palette-with-mirror/1.webp",
+      "description": "Makeup for the beauty collection."
+    },
+    {
+      "slug": "beauty-fragrance",
+      "name": "Fragrance",
+      "parent": "beauty",
+      "position": 13,
+      "imageUrl": "https://cdn.dummyjson.com/product-images/fragrances/dior-j'adore/1.webp",
+      "description": "Fragrance for the beauty collection."
+    },
+    {
+      "slug": "beauty-haircare",
+      "name": "Haircare",
+      "parent": "beauty",
+      "position": 14,
+      "imageUrl": "https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?w=1200",
+      "description": "Haircare for the beauty collection."
+    },
+    {
+      "slug": "home-bedding",
+      "name": "Bedding",
+      "parent": "home",
+      "position": 15,
+      "imageUrl": "https://cdn.dummyjson.com/product-images/furniture/annibale-colombo-bed/1.webp",
+      "description": "Bedding for the home collection."
+    },
+    {
+      "slug": "home-kitchen",
+      "name": "Kitchen",
+      "parent": "home",
+      "position": 16,
+      "imageUrl": "https://cdn.dummyjson.com/product-images/kitchen-accessories/microwave-oven/1.webp",
+      "description": "Kitchen for the home collection."
+    },
+    {
+      "slug": "home-decor",
+      "name": "Decor",
+      "parent": "home",
+      "position": 17,
+      "imageUrl": "https://cdn.dummyjson.com/product-images/home-decoration/house-showpiece-plant/1.webp",
+      "description": "Decor for the home collection."
+    },
+    {
+      "slug": "home-lighting",
+      "name": "Lighting",
+      "parent": "home",
+      "position": 18,
+      "imageUrl": "https://cdn.dummyjson.com/product-images/home-decoration/table-lamp/1.webp",
+      "description": "Lighting for the home collection."
+    }
+  ],
+  "attributes": [
+    {
+      "code": "color",
+      "label": "Color",
+      "kind": "SWATCH",
+      "values": [
+        {
+          "v": "black",
+          "l": "Black",
+          "hex": "#0a0a0a"
+        },
+        {
+          "v": "white",
+          "l": "White",
+          "hex": "#fafafa"
+        },
+        {
+          "v": "grey",
+          "l": "Grey",
+          "hex": "#6b7280"
+        },
+        {
+          "v": "navy",
+          "l": "Navy",
+          "hex": "#1e3a8a"
+        },
+        {
+          "v": "blue",
+          "l": "Blue",
+          "hex": "#2563eb"
+        },
+        {
+          "v": "red",
+          "l": "Red",
+          "hex": "#dc2626"
+        },
+        {
+          "v": "green",
+          "l": "Green",
+          "hex": "#16a34a"
+        },
+        {
+          "v": "brown",
+          "l": "Brown",
+          "hex": "#6b4f3b"
+        },
+        {
+          "v": "silver",
+          "l": "Silver",
+          "hex": "#c0c0c0"
+        }
+      ]
+    },
+    {
+      "code": "apparel-size",
+      "label": "Size",
+      "kind": "LIST",
+      "values": [
+        {
+          "v": "xs",
+          "l": "XS"
+        },
+        {
+          "v": "s",
+          "l": "S"
+        },
+        {
+          "v": "m",
+          "l": "M"
+        },
+        {
+          "v": "l",
+          "l": "L"
+        },
+        {
+          "v": "xl",
+          "l": "XL"
+        },
+        {
+          "v": "xxl",
+          "l": "XXL"
+        }
+      ]
+    },
+    {
+      "code": "shoe-size",
+      "label": "Size",
+      "kind": "LIST",
+      "values": [
+        {
+          "v": "uk-7",
+          "l": "UK 7"
+        },
+        {
+          "v": "uk-8",
+          "l": "UK 8"
+        },
+        {
+          "v": "uk-9",
+          "l": "UK 9"
+        },
+        {
+          "v": "uk-10",
+          "l": "UK 10"
+        },
+        {
+          "v": "uk-11",
+          "l": "UK 11"
+        }
+      ]
+    }
+  ],
+  "products": [
+    {
+      "slug": "gigabyte-aorus-men-tshirt",
+      "name": "Gigabyte Aorus Men Tshirt",
+      "brand": "Gigabyte",
+      "category": "mens-t-shirts",
+      "short": "The Gigabyte Aorus Men Tshirt is a cool and casual shirt for gaming enthusiasts. With the Aorus logo and sleek design, it's perfect for e…",
+      "long": "The Gigabyte Aorus Men Tshirt is a cool and casual shirt for gaming enthusiasts. With the Aorus logo and sleek design, it's perfect for expressing your gaming style.",
+      "featured": true,
+      "media": [
+        {
+          "url": "https://cdn.dummyjson.com/product-images/mens-shirts/gigabyte-aorus-men-tshirt/1.webp",
+          "alt": "Gigabyte Aorus Men Tshirt 1"
+        },
+        {
+          "url": "https://cdn.dummyjson.com/product-images/mens-shirts/gigabyte-aorus-men-tshirt/2.webp",
+          "alt": "Gigabyte Aorus Men Tshirt 2"
+        },
+        {
+          "url": "https://cdn.dummyjson.com/product-images/mens-shirts/gigabyte-aorus-men-tshirt/3.webp",
+          "alt": "Gigabyte Aorus Men Tshirt 3"
+        }
+      ],
+      "specs": [
+        {
+          "key": "Dimensions",
+          "value": "22.31 × 26.47 × 13.27 cm"
+        },
+        {
+          "key": "Weight",
+          "value": "4"
+        },
+        {
+          "key": "Warranty",
+          "value": "3 year warranty"
+        },
+        {
+          "key": "Returns",
+          "value": "30 days return policy"
+        },
+        {
+          "key": "Tags",
+          "value": "clothing, men's t-shirts"
+        }
+      ],
+      "variants": [
+        {
+          "sku": "GIGABYTE-AORUS-M-S",
+          "name": "S",
+          "pricePaise": 129900,
+          "comparePaise": 179900,
+          "onHand": 18,
+          "attrs": [
+            {
+              "code": "apparel-size",
+              "value": "s"
+            },
+            {
+              "code": "color",
+              "value": "black"
+            }
+          ],
+          "isDefault": false
+        },
+        {
+          "sku": "GIGABYTE-AORUS-M-M",
+          "name": "M",
+          "pricePaise": 129900,
+          "comparePaise": 179900,
+          "onHand": 24,
+          "attrs": [
+            {
+              "code": "apparel-size",
+              "value": "m"
+            },
+            {
+              "code": "color",
+              "value": "black"
+            }
+          ],
+          "isDefault": true
+        },
+        {
+          "sku": "GIGABYTE-AORUS-M-L",
+          "name": "L",
+          "pricePaise": 129900,
+          "comparePaise": 179900,
+          "onHand": 16,
+          "attrs": [
+            {
+              "code": "apparel-size",
+              "value": "l"
+            },
+            {
+              "code": "color",
+              "value": "black"
+            }
+          ],
+          "isDefault": false
+        },
+        {
+          "sku": "GIGABYTE-AORUS-M-XL",
+          "name": "XL",
+          "pricePaise": 129900,
+          "comparePaise": 179900,
+          "onHand": 10,
+          "attrs": [
+            {
+              "code": "apparel-size",
+              "value": "xl"
+            },
+            {
+              "code": "color",
+              "value": "black"
+            }
+          ],
+          "isDefault": false
+        }
+      ]
+    },
+    {
+      "slug": "man-plaid-shirt",
+      "name": "Man Plaid Shirt",
+      "brand": "Classic Wear",
+      "category": "mens-shirts",
+      "short": "The Man Plaid Shirt is a timeless and versatile men's shirt with a classic plaid pattern. Its comfortable fit and casual style make it a…",
+      "long": "The Man Plaid Shirt is a timeless and versatile men's shirt with a classic plaid pattern. Its comfortable fit and casual style make it a wardrobe essential for various occasions.",
+      "featured": false,
+      "media": [
+        {
+          "url": "https://cdn.dummyjson.com/product-images/mens-shirts/man-plaid-shirt/1.webp",
+          "alt": "Man Plaid Shirt 1"
+        },
+        {
+          "url": "https://cdn.dummyjson.com/product-images/mens-shirts/man-plaid-shirt/2.webp",
+          "alt": "Man Plaid Shirt 2"
+        },
+        {
+          "url": "https://cdn.dummyjson.com/product-images/mens-shirts/man-plaid-shirt/3.webp",
+          "alt": "Man Plaid Shirt 3"
+        }
+      ],
+      "specs": [
+        {
+          "key": "Dimensions",
+          "value": "9.34 × 5.97 × 10.85 cm"
+        },
+        {
+          "key": "Weight",
+          "value": "3"
+        },
+        {
+          "key": "Warranty",
+          "value": "1 week warranty"
+        },
+        {
+          "key": "Returns",
+          "value": "7 days return policy"
+        },
+        {
+          "key": "Tags",
+          "value": "clothing, men's shirts"
+        }
+      ],
+      "variants": [
+        {
+          "sku": "MAN-PLAID-SHIRT-S",
+          "name": "S",
+          "pricePaise": 199900,
+          "onHand": 18,
+          "attrs": [
+            {
+              "code": "apparel-size",
+              "value": "s"
+            },
+            {
+              "code": "color",
+              "value": "navy"
+            }
+          ],
+          "isDefault": false
+        },
+        {
+          "sku": "MAN-PLAID-SHIRT-M",
+          "name": "M",
+          "pricePaise": 199900,
+          "onHand": 24,
+          "attrs": [
+            {
+              "code": "apparel-size",
+              "value": "m"
+            },
+            {
+              "code": "color",
+              "value": "navy"
+            }
+          ],
+          "isDefault": true
+        },
+        {
+          "sku": "MAN-PLAID-SHIRT-L",
+          "name": "L",
+          "pricePaise": 199900,
+          "onHand": 16,
+          "attrs": [
+            {
+              "code": "apparel-size",
+              "value": "l"
+            },
+            {
+              "code": "color",
+              "value": "navy"
+            }
+          ],
+          "isDefault": false
+        },
+        {
+          "sku": "MAN-PLAID-SHIRT-XL",
+          "name": "XL",
+          "pricePaise": 199900,
+          "onHand": 10,
+          "attrs": [
+            {
+              "code": "apparel-size",
+              "value": "xl"
+            },
+            {
+              "code": "color",
+              "value": "navy"
+            }
+          ],
+          "isDefault": false
+        }
+      ]
+    },
+    {
+      "slug": "nike-air-jordan-1-red-and-black",
+      "name": "Nike Air Jordan 1 Red And Black",
+      "brand": "Nike",
+      "category": "mens-shoes",
+      "short": "The Nike Air Jordan 1 in Red and Black is an iconic basketball sneaker known for its stylish design and high-performance features, making…",
+      "long": "The Nike Air Jordan 1 in Red and Black is an iconic basketball sneaker known for its stylish design and high-performance features, making it a favorite among sneaker enthusiasts and athletes.",
+      "featured": true,
+      "media": [
+        {
+          "url": "https://cdn.dummyjson.com/product-images/mens-shoes/nike-air-jordan-1-red-and-black/1.webp",
+          "alt": "Nike Air Jordan 1 Red And Black 1"
+        },
+        {
+          "url": "https://cdn.dummyjson.com/product-images/mens-shoes/nike-air-jordan-1-red-and-black/2.webp",
+          "alt": "Nike Air Jordan 1 Red And Black 2"
+        },
+        {
+          "url": "https://cdn.dummyjson.com/product-images/mens-shoes/nike-air-jordan-1-red-and-black/3.webp",
+          "alt": "Nike Air Jordan 1 Red And Black 3"
+        }
+      ],
+      "specs": [
+        {
+          "key": "Dimensions",
+          "value": "17.44 × 9.52 × 27 cm"
+        },
+        {
+          "key": "Weight",
+          "value": "3"
+        },
+        {
+          "key": "Warranty",
+          "value": "1 year warranty"
+        },
+        {
+          "key": "Returns",
+          "value": "No return policy"
+        },
+        {
+          "key": "Tags",
+          "value": "footwear, athletic shoes"
+        }
+      ],
+      "variants": [
+        {
+          "sku": "NIKE-AIR-JORDAN-UK7",
+          "name": "UK 7",
+          "pricePaise": 1499500,
+          "comparePaise": 1699500,
+          "onHand": 18,
+          "attrs": [
+            {
+              "code": "shoe-size",
+              "value": "uk-7"
+            },
+            {
+              "code": "color",
+              "value": "red"
+            }
+          ],
+          "isDefault": false
+        },
+        {
+          "sku": "NIKE-AIR-JORDAN-UK8",
+          "name": "UK 8",
+          "pricePaise": 1499500,
+          "comparePaise": 1699500,
+          "onHand": 24,
+          "attrs": [
+            {
+              "code": "shoe-size",
+              "value": "uk-8"
+            },
+            {
+              "code": "color",
+              "value": "red"
+            }
+          ],
+          "isDefault": true
+        },
+        {
+          "sku": "NIKE-AIR-JORDAN-UK9",
+          "name": "UK 9",
+          "pricePaise": 1499500,
+          "comparePaise": 1699500,
+          "onHand": 16,
+          "attrs": [
+            {
+              "code": "shoe-size",
+              "value": "uk-9"
+            },
+            {
+              "code": "color",
+              "value": "red"
+            }
+          ],
+          "isDefault": false
+        },
+        {
+          "sku": "NIKE-AIR-JORDAN-UK10",
+          "name": "UK 10",
+          "pricePaise": 1499500,
+          "comparePaise": 1699500,
+          "onHand": 10,
+          "attrs": [
+            {
+              "code": "shoe-size",
+              "value": "uk-10"
+            },
+            {
+              "code": "color",
+              "value": "red"
+            }
+          ],
+          "isDefault": false
+        }
+      ]
+    },
+    {
+      "slug": "puma-future-rider-trainers",
+      "name": "Puma Future Rider Trainers",
+      "brand": "Puma",
+      "category": "mens-shoes",
+      "short": "The Puma Future Rider Trainers offer a blend of retro style and modern comfort. Perfect for casual wear, these trainers provide a fashion…",
+      "long": "The Puma Future Rider Trainers offer a blend of retro style and modern comfort. Perfect for casual wear, these trainers provide a fashionable and comfortable option for everyday use.",
+      "featured": false,
+      "media": [
+        {
+          "url": "https://cdn.dummyjson.com/product-images/mens-shoes/puma-future-rider-trainers/1.webp",
+          "alt": "Puma Future Rider Trainers 1"
+        },
+        {
+          "url": "https://cdn.dummyjson.com/product-images/mens-shoes/puma-future-rider-trainers/2.webp",
+          "alt": "Puma Future Rider Trainers 2"
+        },
+        {
+          "url": "https://cdn.dummyjson.com/product-images/mens-shoes/puma-future-rider-trainers/3.webp",
+          "alt": "Puma Future Rider Trainers 3"
+        }
+      ],
+      "specs": [
+        {
+          "key": "Dimensions",
+          "value": "17.45 × 15.58 × 23.13 cm"
+        },
+        {
+          "key": "Weight",
+          "value": "6"
+        },
+        {
+          "key": "Warranty",
+          "value": "5 year warranty"
+        },
+        {
+          "key": "Returns",
+          "value": "90 days return policy"
+        },
+        {
+          "key": "Tags",
+          "value": "footwear, casual shoes"
+        }
+      ],
+      "variants": [
+        {
+          "sku": "PUMA-FUTURE-RIDE-UK7",
+          "name": "UK 7",
+          "pricePaise": 799900,
+          "onHand": 18,
+          "attrs": [
+            {
+              "code": "shoe-size",
+              "value": "uk-7"
+            },
+            {
+              "code": "color",
+              "value": "blue"
+            }
+          ],
+          "isDefault": false
+        },
+        {
+          "sku": "PUMA-FUTURE-RIDE-UK8",
+          "name": "UK 8",
+          "pricePaise": 799900,
+          "onHand": 24,
+          "attrs": [
+            {
+              "code": "shoe-size",
+              "value": "uk-8"
+            },
+            {
+              "code": "color",
+              "value": "blue"
+            }
+          ],
+          "isDefault": true
+        },
+        {
+          "sku": "PUMA-FUTURE-RIDE-UK9",
+          "name": "UK 9",
+          "pricePaise": 799900,
+          "onHand": 16,
+          "attrs": [
+            {
+              "code": "shoe-size",
+              "value": "uk-9"
+            },
+            {
+              "code": "color",
+              "value": "blue"
+            }
+          ],
+          "isDefault": false
+        },
+        {
+          "sku": "PUMA-FUTURE-RIDE-UK10",
+          "name": "UK 10",
+          "pricePaise": 799900,
+          "onHand": 10,
+          "attrs": [
+            {
+              "code": "shoe-size",
+              "value": "uk-10"
+            },
+            {
+              "code": "color",
+              "value": "blue"
+            }
+          ],
+          "isDefault": false
+        }
+      ]
+    },
+    {
+      "slug": "longines-master-collection",
+      "name": "Longines Master Collection",
+      "brand": "Longines",
+      "category": "mens-watches",
+      "short": "The Longines Master Collection is an elegant and refined watch known for its precision and craftsmanship. With a timeless design, it's a…",
+      "long": "The Longines Master Collection is an elegant and refined watch known for its precision and craftsmanship. With a timeless design, it's a symbol of luxury and sophistication.",
+      "featured": false,
+      "media": [
+        {
+          "url": "https://cdn.dummyjson.com/product-images/mens-watches/longines-master-collection/1.webp",
+          "alt": "Longines Master Collection 1"
+        },
+        {
+          "url": "https://cdn.dummyjson.com/product-images/mens-watches/longines-master-collection/2.webp",
+          "alt": "Longines Master Collection 2"
+        },
+        {
+          "url": "https://cdn.dummyjson.com/product-images/mens-watches/longines-master-collection/3.webp",
+          "alt": "Longines Master Collection 3"
+        }
+      ],
+      "specs": [
+        {
+          "key": "Dimensions",
+          "value": "15.39 × 10.06 × 20.32 cm"
+        },
+        {
+          "key": "Weight",
+          "value": "4"
+        },
+        {
+          "key": "Warranty",
+          "value": "1 week warranty"
+        },
+        {
+          "key": "Returns",
+          "value": "7 days return policy"
+        },
+        {
+          "key": "Tags",
+          "value": "watches, luxury watches"
+        }
+      ],
+      "variants": [
+        {
+          "sku": "LONGINES-MASTER--STD",
+          "name": "Standard",
+          "pricePaise": 16500000,
+          "onHand": 40,
+          "attrs": [
+            {
+              "code": "color",
+              "value": "silver"
+            }
+          ],
+          "isDefault": true
+        }
+      ]
+    },
+    {
+      "slug": "classic-sun-glasses",
+      "name": "Classic Sun Glasses",
+      "brand": "Fashion Shades",
+      "category": "mens-accessories",
+      "short": "The Classic Sun Glasses offer a timeless design with a neutral frame and UV-protected lenses. These sunglasses are versatile and suitable…",
+      "long": "The Classic Sun Glasses offer a timeless design with a neutral frame and UV-protected lenses. These sunglasses are versatile and suitable for various occasions.",
+      "featured": false,
+      "media": [
+        {
+          "url": "https://cdn.dummyjson.com/product-images/sunglasses/classic-sun-glasses/1.webp",
+          "alt": "Classic Sun Glasses 1"
+        },
+        {
+          "url": "https://cdn.dummyjson.com/product-images/sunglasses/classic-sun-glasses/2.webp",
+          "alt": "Classic Sun Glasses 2"
+        },
+        {
+          "url": "https://cdn.dummyjson.com/product-images/sunglasses/classic-sun-glasses/3.webp",
+          "alt": "Classic Sun Glasses 3"
+        }
+      ],
+      "specs": [
+        {
+          "key": "Dimensions",
+          "value": "19.87 × 16.73 × 11.07 cm"
+        },
+        {
+          "key": "Weight",
+          "value": "8"
+        },
+        {
+          "key": "Warranty",
+          "value": "6 months warranty"
+        },
+        {
+          "key": "Returns",
+          "value": "90 days return policy"
+        },
+        {
+          "key": "Tags",
+          "value": "eyewear, sunglasses"
+        }
+      ],
+      "variants": [
+        {
+          "sku": "CLASSIC-SUN-GLAS-STD",
+          "name": "Standard",
+          "pricePaise": 149900,
+          "onHand": 40,
+          "attrs": [
+            {
+              "code": "color",
+              "value": "black"
+            }
+          ],
+          "isDefault": true
+        }
+      ]
+    },
+    {
+      "slug": "sunglasses",
+      "name": "Sunglasses",
+      "brand": "Fashion Shades",
+      "category": "mens-accessories",
+      "short": "The Sunglasses offer a classic and simple design with a focus on functionality. These sunglasses provide essential UV protection while ma…",
+      "long": "The Sunglasses offer a classic and simple design with a focus on functionality. These sunglasses provide essential UV protection while maintaining a timeless look.",
+      "featured": false,
+      "media": [
+        {
+          "url": "https://cdn.dummyjson.com/product-images/sunglasses/sunglasses/1.webp",
+          "alt": "Sunglasses 1"
+        },
+        {
+          "url": "https://cdn.dummyjson.com/product-images/sunglasses/sunglasses/2.webp",
+          "alt": "Sunglasses 2"
+        },
+        {
+          "url": "https://cdn.dummyjson.com/product-images/sunglasses/sunglasses/3.webp",
+          "alt": "Sunglasses 3"
+        }
+      ],
+      "specs": [
+        {
+          "key": "Dimensions",
+          "value": "16.15 × 24.59 × 10.31 cm"
+        },
+        {
+          "key": "Weight",
+          "value": "1"
+        },
+        {
+          "key": "Warranty",
+          "value": "3 year warranty"
+        },
+        {
+          "key": "Returns",
+          "value": "60 days return policy"
+        },
+        {
+          "key": "Tags",
+          "value": "eyewear, sunglasses"
+        }
+      ],
+      "variants": [
+        {
+          "sku": "SUNGLASSES-STD",
+          "name": "Standard",
+          "pricePaise": 99900,
+          "onHand": 40,
+          "attrs": [
+            {
+              "code": "color",
+              "value": "black"
+            }
+          ],
+          "isDefault": true
+        }
+      ]
+    },
+    {
+      "slug": "gray-dress",
+      "name": "Gray Dress",
+      "brand": null,
+      "category": "womens-tops",
+      "short": "The Gray Dress is a versatile and chic option for various occasions. With a neutral gray color, it can be dressed up or down, making it a…",
+      "long": "The Gray Dress is a versatile and chic option for various occasions. With a neutral gray color, it can be dressed up or down, making it a wardrobe staple for any fashion-forward individual.",
+      "featured": false,
+      "media": [
+        {
+          "url": "https://cdn.dummyjson.com/product-images/tops/gray-dress/1.webp",
+          "alt": "Gray Dress 1"
+        },
+        {
+          "url": "https://cdn.dummyjson.com/product-images/tops/gray-dress/2.webp",
+          "alt": "Gray Dress 2"
+        },
+        {
+          "url": "https://cdn.dummyjson.com/product-images/tops/gray-dress/3.webp",
+          "alt": "Gray Dress 3"
+        }
+      ],
+      "specs": [
+        {
+          "key": "Dimensions",
+          "value": "11.91 × 25.72 × 18.55 cm"
+        },
+        {
+          "key": "Weight",
+          "value": "1"
+        },
+        {
+          "key": "Warranty",
+          "value": "1 month warranty"
+        },
+        {
+          "key": "Returns",
+          "value": "90 days return policy"
+        },
+        {
+          "key": "Tags",
+          "value": "clothing, dresses"
+        }
+      ],
+      "variants": [
+        {
+          "sku": "GRAY-DRESS-S",
+          "name": "S",
+          "pricePaise": 179900,
+          "onHand": 18,
+          "attrs": [
+            {
+              "code": "apparel-size",
+              "value": "s"
+            },
+            {
+              "code": "color",
+              "value": "grey"
+            }
+          ],
+          "isDefault": false
+        },
+        {
+          "sku": "GRAY-DRESS-M",
+          "name": "M",
+          "pricePaise": 179900,
+          "onHand": 24,
+          "attrs": [
+            {
+              "code": "apparel-size",
+              "value": "m"
+            },
+            {
+              "code": "color",
+              "value": "grey"
+            }
+          ],
+          "isDefault": true
+        },
+        {
+          "sku": "GRAY-DRESS-L",
+          "name": "L",
+          "pricePaise": 179900,
+          "onHand": 16,
+          "attrs": [
+            {
+              "code": "apparel-size",
+              "value": "l"
+            },
+            {
+              "code": "color",
+              "value": "grey"
+            }
+          ],
+          "isDefault": false
+        },
+        {
+          "sku": "GRAY-DRESS-XL",
+          "name": "XL",
+          "pricePaise": 179900,
+          "onHand": 10,
+          "attrs": [
+            {
+              "code": "apparel-size",
+              "value": "xl"
+            },
+            {
+              "code": "color",
+              "value": "grey"
+            }
+          ],
+          "isDefault": false
+        }
+      ]
+    },
+    {
+      "slug": "tartan-dress",
+      "name": "Tartan Dress",
+      "brand": null,
+      "category": "womens-tops",
+      "short": "The Tartan Dress features a classic tartan pattern, bringing a timeless and sophisticated touch to your wardrobe. Perfect for fall and wi…",
+      "long": "The Tartan Dress features a classic tartan pattern, bringing a timeless and sophisticated touch to your wardrobe. Perfect for fall and winter, it adds a hint of traditional charm.",
+      "featured": true,
+      "media": [
+        {
+          "url": "https://cdn.dummyjson.com/product-images/tops/tartan-dress/1.webp",
+          "alt": "Tartan Dress 1"
+        },
+        {
+          "url": "https://cdn.dummyjson.com/product-images/tops/tartan-dress/2.webp",
+          "alt": "Tartan Dress 2"
+        },
+        {
+          "url": "https://cdn.dummyjson.com/product-images/tops/tartan-dress/3.webp",
+          "alt": "Tartan Dress 3"
+        }
+      ],
+      "specs": [
+        {
+          "key": "Dimensions",
+          "value": "23.14 × 12.44 × 12.67 cm"
+        },
+        {
+          "key": "Weight",
+          "value": "8"
+        },
+        {
+          "key": "Warranty",
+          "value": "1 month warranty"
+        },
+        {
+          "key": "Returns",
+          "value": "No return policy"
+        },
+        {
+          "key": "Tags",
+          "value": "clothing, dresses"
+        }
+      ],
+      "variants": [
+        {
+          "sku": "TARTAN-DRESS-S",
+          "name": "S",
+          "pricePaise": 219900,
+          "comparePaise": 279900,
+          "onHand": 18,
+          "attrs": [
+            {
+              "code": "apparel-size",
+              "value": "s"
+            },
+            {
+              "code": "color",
+              "value": "red"
+            }
+          ],
+          "isDefault": false
+        },
+        {
+          "sku": "TARTAN-DRESS-M",
+          "name": "M",
+          "pricePaise": 219900,
+          "comparePaise": 279900,
+          "onHand": 24,
+          "attrs": [
+            {
+              "code": "apparel-size",
+              "value": "m"
+            },
+            {
+              "code": "color",
+              "value": "red"
+            }
+          ],
+          "isDefault": true
+        },
+        {
+          "sku": "TARTAN-DRESS-L",
+          "name": "L",
+          "pricePaise": 219900,
+          "comparePaise": 279900,
+          "onHand": 16,
+          "attrs": [
+            {
+              "code": "apparel-size",
+              "value": "l"
+            },
+            {
+              "code": "color",
+              "value": "red"
+            }
+          ],
+          "isDefault": false
+        },
+        {
+          "sku": "TARTAN-DRESS-XL",
+          "name": "XL",
+          "pricePaise": 219900,
+          "comparePaise": 279900,
+          "onHand": 10,
+          "attrs": [
+            {
+              "code": "apparel-size",
+              "value": "xl"
+            },
+            {
+              "code": "color",
+              "value": "red"
+            }
+          ],
+          "isDefault": false
+        }
+      ]
+    },
+    {
+      "slug": "corset-with-black-skirt",
+      "name": "Corset With Black Skirt",
+      "brand": null,
+      "category": "womens-lingerie",
+      "short": "The Corset With Black Skirt is a chic and versatile outfit that pairs a fashionable corset with a classic black skirt. It offers a trendy…",
+      "long": "The Corset With Black Skirt is a chic and versatile outfit that pairs a fashionable corset with a classic black skirt. It offers a trendy and coordinated look for various occasions.",
+      "featured": false,
+      "media": [
+        {
+          "url": "https://cdn.dummyjson.com/product-images/womens-dresses/corset-with-black-skirt/1.webp",
+          "alt": "Corset With Black Skirt 1"
+        },
+        {
+          "url": "https://cdn.dummyjson.com/product-images/womens-dresses/corset-with-black-skirt/2.webp",
+          "alt": "Corset With Black Skirt 2"
+        },
+        {
+          "url": "https://cdn.dummyjson.com/product-images/womens-dresses/corset-with-black-skirt/3.webp",
+          "alt": "Corset With Black Skirt 3"
+        }
+      ],
+      "specs": [
+        {
+          "key": "Dimensions",
+          "value": "17.56 × 28.42 × 23.95 cm"
+        },
+        {
+          "key": "Weight",
+          "value": "7"
+        },
+        {
+          "key": "Warranty",
+          "value": "1 month warranty"
+        },
+        {
+          "key": "Returns",
+          "value": "No return policy"
+        },
+        {
+          "key": "Tags",
+          "value": "clothing, corsets, skirts"
+        }
+      ],
+      "variants": [
+        {
+          "sku": "CORSET-WITH-BLAC-S",
+          "name": "S",
+          "pricePaise": 249900,
+          "onHand": 18,
+          "attrs": [
+            {
+              "code": "apparel-size",
+              "value": "s"
+            },
+            {
+              "code": "color",
+              "value": "black"
+            }
+          ],
+          "isDefault": false
+        },
+        {
+          "sku": "CORSET-WITH-BLAC-M",
+          "name": "M",
+          "pricePaise": 249900,
+          "onHand": 24,
+          "attrs": [
+            {
+              "code": "apparel-size",
+              "value": "m"
+            },
+            {
+              "code": "color",
+              "value": "black"
+            }
+          ],
+          "isDefault": true
+        },
+        {
+          "sku": "CORSET-WITH-BLAC-L",
+          "name": "L",
+          "pricePaise": 249900,
+          "onHand": 16,
+          "attrs": [
+            {
+              "code": "apparel-size",
+              "value": "l"
+            },
+            {
+              "code": "color",
+              "value": "black"
+            }
+          ],
+          "isDefault": false
+        },
+        {
+          "sku": "CORSET-WITH-BLAC-XL",
+          "name": "XL",
+          "pricePaise": 249900,
+          "onHand": 10,
+          "attrs": [
+            {
+              "code": "apparel-size",
+              "value": "xl"
+            },
+            {
+              "code": "color",
+              "value": "black"
+            }
+          ],
+          "isDefault": false
+        }
+      ]
+    },
+    {
+      "slug": "green-crystal-earring",
+      "name": "Green Crystal Earring",
+      "brand": null,
+      "category": "womens-jewelry",
+      "short": "The Green Crystal Earring is a dazzling accessory that features a vibrant green crystal. With a classic design, it adds a touch of elegan…",
+      "long": "The Green Crystal Earring is a dazzling accessory that features a vibrant green crystal. With a classic design, it adds a touch of elegance to your ensemble, perfect for formal or special occasions.",
+      "featured": false,
+      "media": [
+        {
+          "url": "https://cdn.dummyjson.com/product-images/womens-jewellery/green-crystal-earring/1.webp",
+          "alt": "Green Crystal Earring 1"
+        },
+        {
+          "url": "https://cdn.dummyjson.com/product-images/womens-jewellery/green-crystal-earring/2.webp",
+          "alt": "Green Crystal Earring 2"
+        },
+        {
+          "url": "https://cdn.dummyjson.com/product-images/womens-jewellery/green-crystal-earring/3.webp",
+          "alt": "Green Crystal Earring 3"
+        }
+      ],
+      "specs": [
+        {
+          "key": "Dimensions",
+          "value": "14.61 × 22.92 × 12.52 cm"
+        },
+        {
+          "key": "Weight",
+          "value": "2"
+        },
+        {
+          "key": "Warranty",
+          "value": "5 year warranty"
+        },
+        {
+          "key": "Returns",
+          "value": "60 days return policy"
+        },
+        {
+          "key": "Tags",
+          "value": "fashion accessories, earrings"
+        }
+      ],
+      "variants": [
+        {
+          "sku": "GREEN-CRYSTAL-EA-STD",
+          "name": "Standard",
+          "pricePaise": 89900,
+          "onHand": 40,
+          "attrs": [
+            {
+              "code": "color",
+              "value": "green"
+            }
+          ],
+          "isDefault": true
+        }
+      ]
+    },
+    {
+      "slug": "tropical-earring",
+      "name": "Tropical Earring",
+      "brand": null,
+      "category": "womens-jewelry",
+      "short": "The Tropical Earring is a fun and playful accessory inspired by tropical elements. Featuring vibrant colors and a lively design, it's per…",
+      "long": "The Tropical Earring is a fun and playful accessory inspired by tropical elements. Featuring vibrant colors and a lively design, it's perfect for adding a touch of summer to your look.",
+      "featured": false,
+      "media": [
+        {
+          "url": "https://cdn.dummyjson.com/product-images/womens-jewellery/tropical-earring/1.webp",
+          "alt": "Tropical Earring 1"
+        },
+        {
+          "url": "https://cdn.dummyjson.com/product-images/womens-jewellery/tropical-earring/2.webp",
+          "alt": "Tropical Earring 2"
+        },
+        {
+          "url": "https://cdn.dummyjson.com/product-images/womens-jewellery/tropical-earring/3.webp",
+          "alt": "Tropical Earring 3"
+        }
+      ],
+      "specs": [
+        {
+          "key": "Dimensions",
+          "value": "14.99 × 15.76 × 16.09 cm"
+        },
+        {
+          "key": "Weight",
+          "value": "3"
+        },
+        {
+          "key": "Warranty",
+          "value": "3 year warranty"
+        },
+        {
+          "key": "Returns",
+          "value": "7 days return policy"
+        },
+        {
+          "key": "Tags",
+          "value": "fashion accessories, earrings"
+        }
+      ],
+      "variants": [
+        {
+          "sku": "TROPICAL-EARRING-STD",
+          "name": "Standard",
+          "pricePaise": 69900,
+          "onHand": 40,
+          "attrs": [
+            {
+              "code": "color",
+              "value": "green"
+            }
+          ],
+          "isDefault": true
+        }
+      ]
+    },
+    {
+      "slug": "olay-ultra-moisture-shea-butter-body-wash",
+      "name": "Olay Ultra Moisture Shea Butter Body Wash",
+      "brand": "Olay",
+      "category": "beauty-skincare",
+      "short": "Olay Ultra Moisture Shea Butter Body Wash is a luxurious body wash that hydrates and nourishes your skin with the moisturizing power of s…",
+      "long": "Olay Ultra Moisture Shea Butter Body Wash is a luxurious body wash that hydrates and nourishes your skin with the moisturizing power of shea butter. Enjoy a rich lather and silky-smooth skin.",
+      "featured": false,
+      "media": [
+        {
+          "url": "https://cdn.dummyjson.com/product-images/skin-care/olay-ultra-moisture-shea-butter-body-wash/1.webp",
+          "alt": "Olay Ultra Moisture Shea Butter Body Wash 1"
+        },
+        {
+          "url": "https://cdn.dummyjson.com/product-images/skin-care/olay-ultra-moisture-shea-butter-body-wash/2.webp",
+          "alt": "Olay Ultra Moisture Shea Butter Body Wash 2"
+        },
+        {
+          "url": "https://cdn.dummyjson.com/product-images/skin-care/olay-ultra-moisture-shea-butter-body-wash/3.webp",
+          "alt": "Olay Ultra Moisture Shea Butter Body Wash 3"
+        }
+      ],
+      "specs": [
+        {
+          "key": "Dimensions",
+          "value": "25.23 × 28.33 × 11.89 cm"
+        },
+        {
+          "key": "Weight",
+          "value": "4"
+        },
+        {
+          "key": "Warranty",
+          "value": "1 year warranty"
+        },
+        {
+          "key": "Returns",
+          "value": "30 days return policy"
+        },
+        {
+          "key": "Tags",
+          "value": "personal care, body wash"
+        }
+      ],
+      "variants": [
+        {
+          "sku": "OLAY-ULTRA-MOIST-STD",
+          "name": "Standard",
+          "pricePaise": 49900,
+          "onHand": 40,
+          "attrs": [],
+          "isDefault": true
+        }
+      ]
+    },
+    {
+      "slug": "eyeshadow-palette-with-mirror",
+      "name": "Eyeshadow Palette with Mirror",
+      "brand": "Glamour Beauty",
+      "category": "beauty-makeup",
+      "short": "The Eyeshadow Palette with Mirror offers a versatile range of eyeshadow shades for creating stunning eye looks. With a built-in mirror, i…",
+      "long": "The Eyeshadow Palette with Mirror offers a versatile range of eyeshadow shades for creating stunning eye looks. With a built-in mirror, it's convenient for on-the-go makeup application.",
+      "featured": true,
+      "media": [
+        {
+          "url": "https://cdn.dummyjson.com/product-images/beauty/eyeshadow-palette-with-mirror/1.webp",
+          "alt": "Eyeshadow Palette with Mirror 1"
+        }
+      ],
+      "specs": [
+        {
+          "key": "Dimensions",
+          "value": "9.26 × 22.47 × 27.67 cm"
+        },
+        {
+          "key": "Weight",
+          "value": "9"
+        },
+        {
+          "key": "Warranty",
+          "value": "1 year warranty"
+        },
+        {
+          "key": "Returns",
+          "value": "7 days return policy"
+        },
+        {
+          "key": "Tags",
+          "value": "beauty, eyeshadow"
+        }
+      ],
+      "variants": [
+        {
+          "sku": "EYESHADOW-PALETT-STD",
+          "name": "Standard",
+          "pricePaise": 129900,
+          "comparePaise": 159900,
+          "onHand": 40,
+          "attrs": [],
+          "isDefault": true
+        }
+      ]
+    },
+    {
+      "slug": "red-lipstick",
+      "name": "Red Lipstick",
+      "brand": "Chic Cosmetics",
+      "category": "beauty-makeup",
+      "short": "The Red Lipstick is a classic and bold choice for adding a pop of color to your lips. With a creamy and pigmented formula, it provides a…",
+      "long": "The Red Lipstick is a classic and bold choice for adding a pop of color to your lips. With a creamy and pigmented formula, it provides a vibrant and long-lasting finish.",
+      "featured": false,
+      "media": [
+        {
+          "url": "https://cdn.dummyjson.com/product-images/beauty/red-lipstick/1.webp",
+          "alt": "Red Lipstick 1"
+        }
+      ],
+      "specs": [
+        {
+          "key": "Dimensions",
+          "value": "18.11 × 28.38 × 22.17 cm"
+        },
+        {
+          "key": "Weight",
+          "value": "1"
+        },
+        {
+          "key": "Warranty",
+          "value": "3 year warranty"
+        },
+        {
+          "key": "Returns",
+          "value": "7 days return policy"
+        },
+        {
+          "key": "Tags",
+          "value": "beauty, lipstick"
+        }
+      ],
+      "variants": [
+        {
+          "sku": "RED-LIPSTICK-STD",
+          "name": "Standard",
+          "pricePaise": 59900,
+          "onHand": 40,
+          "attrs": [],
+          "isDefault": true
+        }
+      ]
+    },
+    {
+      "slug": "dior-jadore",
+      "name": "Dior J'adore",
+      "brand": "Dior",
+      "category": "beauty-fragrance",
+      "short": "J'adore by Dior is a luxurious and floral fragrance, known for its blend of ylang-ylang, rose, and jasmine. It embodies femininity and so…",
+      "long": "J'adore by Dior is a luxurious and floral fragrance, known for its blend of ylang-ylang, rose, and jasmine. It embodies femininity and sophistication.",
+      "featured": false,
+      "media": [
+        {
+          "url": "https://cdn.dummyjson.com/product-images/fragrances/dior-j'adore/1.webp",
+          "alt": "Dior J'adore 1"
+        },
+        {
+          "url": "https://cdn.dummyjson.com/product-images/fragrances/dior-j'adore/2.webp",
+          "alt": "Dior J'adore 2"
+        },
+        {
+          "url": "https://cdn.dummyjson.com/product-images/fragrances/dior-j'adore/3.webp",
+          "alt": "Dior J'adore 3"
+        }
+      ],
+      "specs": [
+        {
+          "key": "Dimensions",
+          "value": "27.67 × 28.28 × 11.83 cm"
+        },
+        {
+          "key": "Weight",
+          "value": "4"
+        },
+        {
+          "key": "Warranty",
+          "value": "1 week warranty"
+        },
+        {
+          "key": "Returns",
+          "value": "7 days return policy"
+        },
+        {
+          "key": "Tags",
+          "value": "fragrances, perfumes"
+        }
+      ],
+      "variants": [
+        {
+          "sku": "DIOR-JADORE-STD",
+          "name": "Standard",
+          "pricePaise": 950000,
+          "onHand": 40,
+          "attrs": [],
+          "isDefault": true
+        }
+      ]
+    },
+    {
+      "slug": "annibale-colombo-bed",
+      "name": "Annibale Colombo Bed",
+      "brand": "Annibale Colombo",
+      "category": "home-bedding",
+      "short": "The Annibale Colombo Bed is a luxurious and elegant bed frame, crafted with high-quality materials for a comfortable and stylish bedroom.",
+      "long": "The Annibale Colombo Bed is a luxurious and elegant bed frame, crafted with high-quality materials for a comfortable and stylish bedroom.",
+      "featured": true,
+      "media": [
+        {
+          "url": "https://cdn.dummyjson.com/product-images/furniture/annibale-colombo-bed/1.webp",
+          "alt": "Annibale Colombo Bed 1"
+        },
+        {
+          "url": "https://cdn.dummyjson.com/product-images/furniture/annibale-colombo-bed/2.webp",
+          "alt": "Annibale Colombo Bed 2"
+        },
+        {
+          "url": "https://cdn.dummyjson.com/product-images/furniture/annibale-colombo-bed/3.webp",
+          "alt": "Annibale Colombo Bed 3"
+        }
+      ],
+      "specs": [
+        {
+          "key": "Dimensions",
+          "value": "28.16 × 25.36 × 17.28 cm"
+        },
+        {
+          "key": "Weight",
+          "value": "10"
+        },
+        {
+          "key": "Warranty",
+          "value": "1 year warranty"
+        },
+        {
+          "key": "Returns",
+          "value": "No return policy"
+        },
+        {
+          "key": "Tags",
+          "value": "furniture, beds"
+        }
+      ],
+      "variants": [
+        {
+          "sku": "ANNIBALE-COLOMBO-STD",
+          "name": "Standard",
+          "pricePaise": 8999900,
+          "onHand": 40,
+          "attrs": [
+            {
+              "code": "color",
+              "value": "brown"
+            }
+          ],
+          "isDefault": true
+        }
+      ]
+    },
+    {
+      "slug": "microwave-oven",
+      "name": "Microwave Oven",
+      "brand": null,
+      "category": "home-kitchen",
+      "short": "The Microwave Oven is a versatile kitchen appliance for quick and efficient cooking, reheating, and defrosting. Its compact size makes it…",
+      "long": "The Microwave Oven is a versatile kitchen appliance for quick and efficient cooking, reheating, and defrosting. Its compact size makes it suitable for various kitchen setups.",
+      "featured": false,
+      "media": [
+        {
+          "url": "https://cdn.dummyjson.com/product-images/kitchen-accessories/microwave-oven/1.webp",
+          "alt": "Microwave Oven 1"
+        },
+        {
+          "url": "https://cdn.dummyjson.com/product-images/kitchen-accessories/microwave-oven/2.webp",
+          "alt": "Microwave Oven 2"
+        },
+        {
+          "url": "https://cdn.dummyjson.com/product-images/kitchen-accessories/microwave-oven/3.webp",
+          "alt": "Microwave Oven 3"
+        }
+      ],
+      "specs": [
+        {
+          "key": "Dimensions",
+          "value": "16.31 × 27.45 × 13.05 cm"
+        },
+        {
+          "key": "Weight",
+          "value": "9"
+        },
+        {
+          "key": "Warranty",
+          "value": "1 year warranty"
+        },
+        {
+          "key": "Returns",
+          "value": "7 days return policy"
+        },
+        {
+          "key": "Tags",
+          "value": "kitchen appliances, microwaves"
+        }
+      ],
+      "variants": [
+        {
+          "sku": "MICROWAVE-OVEN-STD",
+          "name": "Standard",
+          "pricePaise": 899000,
+          "comparePaise": 1099000,
+          "onHand": 40,
+          "attrs": [
+            {
+              "code": "color",
+              "value": "black"
+            }
+          ],
+          "isDefault": true
+        }
+      ]
+    },
+    {
+      "slug": "hand-blender",
+      "name": "Hand Blender",
+      "brand": null,
+      "category": "home-kitchen",
+      "short": "The Hand Blender is a versatile kitchen appliance for blending, pureeing, and mixing. Its compact design and powerful motor make it a con…",
+      "long": "The Hand Blender is a versatile kitchen appliance for blending, pureeing, and mixing. Its compact design and powerful motor make it a convenient tool for various recipes.",
+      "featured": false,
+      "media": [
+        {
+          "url": "https://cdn.dummyjson.com/product-images/kitchen-accessories/hand-blender/1.webp",
+          "alt": "Hand Blender 1"
+        }
+      ],
+      "specs": [
+        {
+          "key": "Dimensions",
+          "value": "27.31 × 21 × 24.27 cm"
+        },
+        {
+          "key": "Weight",
+          "value": "5"
+        },
+        {
+          "key": "Warranty",
+          "value": "1 year warranty"
+        },
+        {
+          "key": "Returns",
+          "value": "No return policy"
+        },
+        {
+          "key": "Tags",
+          "value": "kitchen appliances, blenders"
+        }
+      ],
+      "variants": [
+        {
+          "sku": "HAND-BLENDER-STD",
+          "name": "Standard",
+          "pricePaise": 249900,
+          "onHand": 40,
+          "attrs": [
+            {
+              "code": "color",
+              "value": "white"
+            }
+          ],
+          "isDefault": true
+        }
+      ]
+    },
+    {
+      "slug": "house-showpiece-plant",
+      "name": "House Showpiece Plant",
+      "brand": null,
+      "category": "home-decor",
+      "short": "The House Showpiece Plant is an artificial plant that brings a touch of nature to your home without the need for maintenance. It adds gre…",
+      "long": "The House Showpiece Plant is an artificial plant that brings a touch of nature to your home without the need for maintenance. It adds greenery and style to any space.",
+      "featured": false,
+      "media": [
+        {
+          "url": "https://cdn.dummyjson.com/product-images/home-decoration/house-showpiece-plant/1.webp",
+          "alt": "House Showpiece Plant 1"
+        },
+        {
+          "url": "https://cdn.dummyjson.com/product-images/home-decoration/house-showpiece-plant/2.webp",
+          "alt": "House Showpiece Plant 2"
+        },
+        {
+          "url": "https://cdn.dummyjson.com/product-images/home-decoration/house-showpiece-plant/3.webp",
+          "alt": "House Showpiece Plant 3"
+        }
+      ],
+      "specs": [
+        {
+          "key": "Dimensions",
+          "value": "8.55 × 14.62 × 17.25 cm"
+        },
+        {
+          "key": "Weight",
+          "value": "8"
+        },
+        {
+          "key": "Warranty",
+          "value": "1 year warranty"
+        },
+        {
+          "key": "Returns",
+          "value": "No return policy"
+        },
+        {
+          "key": "Tags",
+          "value": "home decor, artificial plants"
+        }
+      ],
+      "variants": [
+        {
+          "sku": "HOUSE-SHOWPIECE--STD",
+          "name": "Standard",
+          "pricePaise": 129900,
+          "onHand": 40,
+          "attrs": [
+            {
+              "code": "color",
+              "value": "green"
+            }
+          ],
+          "isDefault": true
+        }
+      ]
+    },
+    {
+      "slug": "table-lamp",
+      "name": "Table Lamp",
+      "brand": null,
+      "category": "home-lighting",
+      "short": "The Table Lamp is a functional and decorative lighting solution for your living space. With a modern design, it provides both ambient and…",
+      "long": "The Table Lamp is a functional and decorative lighting solution for your living space. With a modern design, it provides both ambient and task lighting, enhancing the atmosphere.",
+      "featured": false,
+      "media": [
+        {
+          "url": "https://cdn.dummyjson.com/product-images/home-decoration/table-lamp/1.webp",
+          "alt": "Table Lamp 1"
+        }
+      ],
+      "specs": [
+        {
+          "key": "Dimensions",
+          "value": "8.98 × 13.41 × 5.65 cm"
+        },
+        {
+          "key": "Weight",
+          "value": "4"
+        },
+        {
+          "key": "Warranty",
+          "value": "3 months warranty"
+        },
+        {
+          "key": "Returns",
+          "value": "90 days return policy"
+        },
+        {
+          "key": "Tags",
+          "value": "home decor, lighting"
+        }
+      ],
+      "variants": [
+        {
+          "sku": "TABLE-LAMP-STD",
+          "name": "Standard",
+          "pricePaise": 199900,
+          "onHand": 40,
+          "attrs": [
+            {
+              "code": "color",
+              "value": "black"
+            }
+          ],
+          "isDefault": true
+        }
+      ]
+    },
+    {
+      "slug": "levis-511-slim-fit-jeans",
+      "name": "Levi's 511 Slim Fit Jeans",
+      "brand": "Levi's",
+      "category": "mens-jeans",
+      "short": "The original slim — sits below the waist with a slim leg from hip to ankle.",
+      "long": "Levi's most versatile slim jean in stretch denim that moves with you. A modern, narrow silhouette cut close through the seat and thigh with a slim leg opening.",
+      "featured": false,
+      "media": [
+        {
+          "url": "https://images.unsplash.com/photo-1542272604-787c3835535d?w=1200",
+          "alt": "Levi's 511 Slim Fit Jeans"
+        }
+      ],
+      "specs": [
+        {
+          "key": "Fit",
+          "value": "Slim"
+        },
+        {
+          "key": "Fabric",
+          "value": "98% Cotton, 2% Elastane"
+        },
+        {
+          "key": "Rise",
+          "value": "Mid rise"
+        },
+        {
+          "key": "Care",
+          "value": "Machine wash cold"
+        }
+      ],
+      "variants": [
+        {
+          "sku": "LEVIS-511-SLIM-S",
+          "name": "S",
+          "pricePaise": 299900,
+          "comparePaise": 399900,
+          "onHand": 18,
+          "attrs": [
+            {
+              "code": "apparel-size",
+              "value": "s"
+            },
+            {
+              "code": "color",
+              "value": "blue"
+            }
+          ],
+          "isDefault": false
+        },
+        {
+          "sku": "LEVIS-511-SLIM-M",
+          "name": "M",
+          "pricePaise": 299900,
+          "comparePaise": 399900,
+          "onHand": 24,
+          "attrs": [
+            {
+              "code": "apparel-size",
+              "value": "m"
+            },
+            {
+              "code": "color",
+              "value": "blue"
+            }
+          ],
+          "isDefault": true
+        },
+        {
+          "sku": "LEVIS-511-SLIM-L",
+          "name": "L",
+          "pricePaise": 299900,
+          "comparePaise": 399900,
+          "onHand": 16,
+          "attrs": [
+            {
+              "code": "apparel-size",
+              "value": "l"
+            },
+            {
+              "code": "color",
+              "value": "blue"
+            }
+          ],
+          "isDefault": false
+        },
+        {
+          "sku": "LEVIS-511-SLIM-XL",
+          "name": "XL",
+          "pricePaise": 299900,
+          "comparePaise": 399900,
+          "onHand": 10,
+          "attrs": [
+            {
+              "code": "apparel-size",
+              "value": "xl"
+            },
+            {
+              "code": "color",
+              "value": "blue"
+            }
+          ],
+          "isDefault": false
+        }
+      ]
+    },
+    {
+      "slug": "levis-721-high-rise-skinny-jeans",
+      "name": "Levi's 721 High Rise Skinny Jeans",
+      "brand": "Levi's",
+      "category": "womens-jeans",
+      "short": "A high, defining waist with a skinny leg for a sleek, lengthening look.",
+      "long": "The 721 sits at the natural waist and runs skinny through the hip, thigh and ankle in comfort-stretch denim that holds its shape all day.",
+      "featured": false,
+      "media": [
+        {
+          "url": "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=1200",
+          "alt": "Levi's 721 High Rise Skinny Jeans"
+        }
+      ],
+      "specs": [
+        {
+          "key": "Fit",
+          "value": "Skinny"
+        },
+        {
+          "key": "Fabric",
+          "value": "Comfort-stretch denim"
+        },
+        {
+          "key": "Rise",
+          "value": "High rise"
+        },
+        {
+          "key": "Care",
+          "value": "Machine wash cold"
+        }
+      ],
+      "variants": [
+        {
+          "sku": "LEVIS-721-HIGH-S",
+          "name": "S",
+          "pricePaise": 279900,
+          "comparePaise": 349900,
+          "onHand": 18,
+          "attrs": [
+            {
+              "code": "apparel-size",
+              "value": "s"
+            },
+            {
+              "code": "color",
+              "value": "blue"
+            }
+          ],
+          "isDefault": false
+        },
+        {
+          "sku": "LEVIS-721-HIGH-M",
+          "name": "M",
+          "pricePaise": 279900,
+          "comparePaise": 349900,
+          "onHand": 24,
+          "attrs": [
+            {
+              "code": "apparel-size",
+              "value": "m"
+            },
+            {
+              "code": "color",
+              "value": "blue"
+            }
+          ],
+          "isDefault": true
+        },
+        {
+          "sku": "LEVIS-721-HIGH-L",
+          "name": "L",
+          "pricePaise": 279900,
+          "comparePaise": 349900,
+          "onHand": 16,
+          "attrs": [
+            {
+              "code": "apparel-size",
+              "value": "l"
+            },
+            {
+              "code": "color",
+              "value": "blue"
+            }
+          ],
+          "isDefault": false
+        },
+        {
+          "sku": "LEVIS-721-HIGH-XL",
+          "name": "XL",
+          "pricePaise": 279900,
+          "comparePaise": 349900,
+          "onHand": 10,
+          "attrs": [
+            {
+              "code": "apparel-size",
+              "value": "xl"
+            },
+            {
+              "code": "color",
+              "value": "blue"
+            }
+          ],
+          "isDefault": false
+        }
+      ]
+    },
+    {
+      "slug": "jockey-wirefree-cotton-bra",
+      "name": "Jockey Wirefree Cotton Bra",
+      "brand": "Jockey",
+      "category": "womens-bras",
+      "short": "Soft, breathable everyday wirefree bra in combed cotton.",
+      "long": "A seamless, wirefree everyday bra with full cup coverage and soft cushioned straps. Made from skin-friendly combed cotton for all-day comfort.",
+      "featured": false,
+      "media": [
+        {
+          "url": "https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=1200",
+          "alt": "Jockey Wirefree Cotton Bra"
+        }
+      ],
+      "specs": [
+        {
+          "key": "Type",
+          "value": "Wirefree, non-padded"
+        },
+        {
+          "key": "Fabric",
+          "value": "Combed cotton blend"
+        },
+        {
+          "key": "Coverage",
+          "value": "Full cup"
+        },
+        {
+          "key": "Care",
+          "value": "Hand wash"
+        }
+      ],
+      "variants": [
+        {
+          "sku": "JOCKEY-WIREFREE--S",
+          "name": "S",
+          "pricePaise": 79900,
+          "onHand": 18,
+          "attrs": [
+            {
+              "code": "apparel-size",
+              "value": "s"
+            },
+            {
+              "code": "color",
+              "value": "black"
+            }
+          ],
+          "isDefault": false
+        },
+        {
+          "sku": "JOCKEY-WIREFREE--M",
+          "name": "M",
+          "pricePaise": 79900,
+          "onHand": 24,
+          "attrs": [
+            {
+              "code": "apparel-size",
+              "value": "m"
+            },
+            {
+              "code": "color",
+              "value": "black"
+            }
+          ],
+          "isDefault": true
+        },
+        {
+          "sku": "JOCKEY-WIREFREE--L",
+          "name": "L",
+          "pricePaise": 79900,
+          "onHand": 16,
+          "attrs": [
+            {
+              "code": "apparel-size",
+              "value": "l"
+            },
+            {
+              "code": "color",
+              "value": "black"
+            }
+          ],
+          "isDefault": false
+        },
+        {
+          "sku": "JOCKEY-WIREFREE--XL",
+          "name": "XL",
+          "pricePaise": 79900,
+          "onHand": 10,
+          "attrs": [
+            {
+              "code": "apparel-size",
+              "value": "xl"
+            },
+            {
+              "code": "color",
+              "value": "black"
+            }
+          ],
+          "isDefault": false
+        }
+      ]
+    },
+    {
+      "slug": "lor-al-paris-total-repair-5-shampoo",
+      "name": "L'Oréal Paris Total Repair 5 Shampoo",
+      "brand": "L'Oréal Paris",
+      "category": "beauty-haircare",
+      "short": "Repairs the 5 signs of damaged hair — hair fall, dryness, roughness, dullness, split ends.",
+      "long": "Infused with Pro-Keratin and Ceramide, Total Repair 5 reinforces hair fibre, leaving hair visibly healthier, smoother and stronger with every wash.",
+      "featured": false,
+      "media": [
+        {
+          "url": "https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?w=1200",
+          "alt": "L'Oréal Paris Total Repair 5 Shampoo"
+        }
+      ],
+      "specs": [
+        {
+          "key": "Volume",
+          "value": "640 ml"
+        },
+        {
+          "key": "Hair type",
+          "value": "Damaged hair"
+        },
+        {
+          "key": "Key actives",
+          "value": "Pro-Keratin, Ceramide"
+        },
+        {
+          "key": "Sulphate",
+          "value": "Contains SLES"
+        }
+      ],
+      "variants": [
+        {
+          "sku": "LOR-AL-PARIS-STD",
+          "name": "Standard",
+          "pricePaise": 69900,
+          "comparePaise": 79900,
+          "onHand": 40,
+          "attrs": [],
+          "isDefault": true
+        }
+      ]
+    }
+  ],
+  "nav": {
+    "mode": "mega",
+    "items": [
+      {
+        "categorySlug": "men",
+        "childSlugs": [
+          "mens-t-shirts",
+          "mens-shirts",
+          "mens-jeans",
+          "mens-shoes",
+          "mens-watches",
+          "mens-accessories"
+        ]
+      },
+      {
+        "categorySlug": "women",
+        "childSlugs": [
+          "womens-tops",
+          "womens-bras",
+          "womens-lingerie",
+          "womens-jewelry",
+          "womens-jeans"
+        ]
+      },
+      {
+        "categorySlug": "beauty",
+        "childSlugs": [
+          "beauty-skincare",
+          "beauty-makeup",
+          "beauty-fragrance",
+          "beauty-haircare"
+        ]
+      },
+      {
+        "categorySlug": "home",
+        "childSlugs": [
+          "home-bedding",
+          "home-kitchen",
+          "home-decor",
+          "home-lighting"
+        ]
+      }
+    ]
+  },
+  "hero": {
+    "design": "split",
+    "productSlug": "gigabyte-aorus-men-tshirt"
+  }
+}

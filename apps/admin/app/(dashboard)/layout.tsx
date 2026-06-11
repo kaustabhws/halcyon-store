@@ -18,6 +18,7 @@ export default async function DashboardLayout({
         <AdminTopbar
           user={{ fullName: admin.fullName, email: admin.email }}
           isMock={isMockAdminEnabled()}
+          storefrontUrl={process.env.STOREFRONT_URL ?? "http://localhost:3000"}
         />
         <main className="flex-1 overflow-y-auto">{children}</main>
       </div>

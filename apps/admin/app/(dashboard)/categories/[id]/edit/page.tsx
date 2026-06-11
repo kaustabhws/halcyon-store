@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { CategoryForm } from "@/components/categories/category-form";
+import { cloudinaryClientConfig } from "@/lib/cloudinary";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Edit category" };
@@ -12,7 +13,14 @@ export default async function EditCategoryPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const category = await prisma.category.findUnique({ where: { id } });
+  const [category, parentOptions] = await Promise.all([
+    prisma.category.findUnique({ where: { id } }),
+    prisma.category.findMany({
+      where: { parentId: null, deletedAt: null },
+      orderBy: { position: "asc" },
+      select: { id: true, name: true },
+    }),
+  ]);
   if (!category) notFound();
 
   return (
@@ -35,9 +43,12 @@ export default async function EditCategoryPage({
             slug: category.slug,
             description: category.description,
             imageUrl: category.imageUrl,
+            parentId: category.parentId,
             position: category.position,
           },
         }}
+        cloudinary={cloudinaryClientConfig()}
+        parentOptions={parentOptions}
       />
     </div>
   );

@@ -29,6 +29,23 @@ export function cloudinaryCloudName(): string | null {
   return CLOUD_NAME || null;
 }
 
+export function cloudinaryApiKey(): string | null {
+  return API_KEY || null;
+}
+
+/** Client-safe Cloudinary config for the ImageUploader component. */
+export function cloudinaryClientConfig(): {
+  cloudName: string | null;
+  apiKey: string | null;
+  configured: boolean;
+} {
+  return {
+    cloudName: CLOUD_NAME || null,
+    apiKey: API_KEY || null,
+    configured: CLOUDINARY_CONFIGURED,
+  };
+}
+
 /**
  * Generate a signature for the Cloudinary upload widget. The widget calls
  * our /api/cloudinary/sign endpoint and signs `paramsToSign` with the

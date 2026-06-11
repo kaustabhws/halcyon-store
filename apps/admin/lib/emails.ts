@@ -4,7 +4,7 @@ import { prisma } from "@/lib/db";
 import { formatPrice } from "@/lib/format";
 
 const PUBLIC_ORIGIN =
-  process.env.STOREFRONT_URL ?? "http://store.localhost:3000";
+  process.env.STOREFRONT_URL ?? "http://localhost:3000";
 
 const STATUS_MESSAGES: Record<string, { template: "order.shipped" | "order.delivered" | "order.cancelled" | null; message: (orderNumber: string) => string }> = {
   SHIPPED: {

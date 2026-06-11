@@ -4,8 +4,8 @@ Production-grade ecommerce platform — Next.js 16, React 19, Prisma, PostgreSQL
 
 ## Apps
 
-- `apps/storefront` — customer-facing store (`store.localhost:3000` → `store.domain.com`)
-- `apps/admin` — admin dashboard (`admin.localhost:3001` → `admin.domain.com`)
+- `apps/storefront` — customer-facing store (`localhost:3000` → its own domain)
+- `apps/admin` — admin dashboard (`localhost:3001` → its own domain)
 
 ## Packages
 
@@ -29,8 +29,8 @@ npm install
 npm run dev
 ```
 
-Storefront: http://store.localhost:3000
-Admin: http://admin.localhost:3001
+Storefront: http://localhost:3000
+Admin: http://localhost:3001
 
 ## Local infra
 

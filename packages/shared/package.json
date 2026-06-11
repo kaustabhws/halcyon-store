@@ -12,7 +12,9 @@
     "./errors": "./src/errors.ts",
     "./result": "./src/result.ts",
     "./coupons": "./src/coupons.ts",
-    "./brand": "./src/brand.ts"
+    "./brand": "./src/brand.ts",
+    "./hero": "./src/hero.ts",
+    "./nav": "./src/nav.ts"
   },
   "scripts": {
     "lint": "echo 'ok'",

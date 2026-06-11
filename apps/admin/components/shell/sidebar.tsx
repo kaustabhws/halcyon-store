@@ -16,6 +16,7 @@ import {
   Palette,
   MessageSquare,
   TicketPercent,
+  PanelsTopLeft,
 } from "lucide-react";
 import { BRAND } from "@ecom/shared/brand";
 import { cn } from "@/lib/cn";
@@ -47,7 +48,10 @@ export const NAV: { section: string; items: NavItem[] }[] = [
   },
   {
     section: "Marketing",
-    items: [{ href: "/coupons", label: "Coupons", icon: TicketPercent }],
+    items: [
+      { href: "/coupons", label: "Coupons", icon: TicketPercent },
+      { href: "/navigation", label: "Navigation", icon: PanelsTopLeft },
+    ],
   },
   {
     section: "People",

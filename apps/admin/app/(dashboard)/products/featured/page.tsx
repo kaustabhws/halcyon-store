@@ -3,21 +3,15 @@ import Image from "next/image";
 import { prisma } from "@/lib/db";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { FeaturedToggle } from "@/components/products/featured-toggle";
-import { HeroProductForm } from "@/components/products/hero-product-form";
+import { HeroConfigForm } from "@/components/products/hero-config-form";
+import { parseHeroConfig, HERO_SETTING_KEYS } from "@ecom/shared/hero";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Featured Products" };
 
 export default async function FeaturedPage() {
-  const [products, heroSetting] = await Promise.all([
+  const [products, heroSettings] = await Promise.all([
     prisma.product.findMany({
       where: { status: "ACTIVE", deletedAt: null },
       orderBy: [{ isFeatured: "desc" }, { name: "asc" }],
@@ -29,14 +23,21 @@ export default async function FeaturedPage() {
         },
       },
     }),
-    prisma.setting.findFirst({
-      where: { scope: "PLATFORM", vendorId: null, key: "homepage.heroProductId" },
+    prisma.setting.findMany({
+      where: {
+        scope: "PLATFORM",
+        vendorId: null,
+        key: { in: Object.values(HERO_SETTING_KEYS) },
+      },
     }),
   ]);
 
-  const heroProductId = heroSetting?.value
-    ? String(heroSetting.value).replace(/"/g, "")
-    : "";
+  const settingByKey = new Map(heroSettings.map((s) => [s.key, s.value]));
+  const heroConfig = parseHeroConfig({
+    design: settingByKey.get(HERO_SETTING_KEYS.design),
+    productId: settingByKey.get(HERO_SETTING_KEYS.productId),
+    text: settingByKey.get(HERO_SETTING_KEYS.text),
+  });
 
   const featured = products.filter((p) => p.isFeatured);
   const notFeatured = products.filter((p) => !p.isFeatured);
@@ -59,20 +60,20 @@ export default async function FeaturedPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Hero product</CardTitle>
+          <CardTitle>Homepage hero</CardTitle>
         </CardHeader>
         <CardContent>
           <p className="mb-4 text-sm text-muted-foreground">
-            Select one product to feature prominently in the homepage banner.
-            Leave empty for the default text-only hero.
+            Choose a hero design and edit its content. Image designs feature the
+            selected hero product; text designs use the editable copy below.
           </p>
-          <HeroProductForm
+          <HeroConfigForm
             products={products.map((p) => ({
               id: p.id,
               name: p.name,
               brandName: p.brand?.name ?? null,
             }))}
-            currentHeroId={heroProductId}
+            initial={heroConfig}
           />
         </CardContent>
       </Card>

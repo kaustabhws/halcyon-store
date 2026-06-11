@@ -4,141 +4,34 @@ import * as React from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import Autoplay from "embla-carousel-autoplay";
 import { BRAND } from "@ecom/shared/brand";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselPrevious,
+  CarouselNext,
+  type CarouselApi,
+} from "@/components/ui/carousel";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { WishlistButton } from "@/components/wishlist/wishlist-button";
 import { cn } from "@/lib/cn";
 import { formatPrice, discountPercent } from "@/lib/format";
 import { useCartStore } from "@/lib/cart-store";
 import type { ProductDetailView } from "@/lib/db";
-
-type Variant = ProductDetailView["variants"][number];
-type Media = ProductDetailView["media"][number];
-
-type AttrGroup = {
-  code: string;
-  label: string;
-  values: Array<{ value: string; valueLabel: string; swatchHex: string | null }>;
-};
-
-function buildAttrGroups(variants: Variant[]): AttrGroup[] {
-  const groups = new Map<string, AttrGroup>();
-  for (const v of variants) {
-    for (const a of v.attributes) {
-      let g = groups.get(a.code);
-      if (!g) {
-        g = { code: a.code, label: a.label, values: [] };
-        groups.set(a.code, g);
-      }
-      if (!g.values.find((x) => x.value === a.value)) {
-        g.values.push({
-          value: a.value,
-          valueLabel: a.valueLabel,
-          swatchHex: a.swatchHex,
-        });
-      }
-    }
-  }
-  return [...groups.values()];
-}
-
-function findVariant(variants: Variant[], selection: Record<string, string>): Variant | undefined {
-  return variants.find((v) =>
-    Object.entries(selection).every(([code, val]) =>
-      v.attributes.some((a) => a.code === code && a.value === val),
-    ),
-  );
-}
-
-/**
- * A value for an attribute is "selectable" if at least one variant carries
- * that value. We deliberately do NOT require the value to be compatible with
- * the rest of the current selection — clicking it snaps the other attributes
- * to a matching variant (see pickBestVariant). This avoids the classic
- * sparse-matrix dead-end where you can't switch color because the current
- * size/fit combo doesn't exist for the other color.
- *
- * Out-of-stock values are still shown but visually de-emphasized: a value is
- * "in stock" only if some variant with it has availability.
- */
-function valueExists(variants: Variant[], code: string, value: string): boolean {
-  return variants.some((v) =>
-    v.attributes.some((a) => a.code === code && a.value === value),
-  );
-}
-
-function valueInStock(variants: Variant[], code: string, value: string): boolean {
-  return variants.some(
-    (v) =>
-      v.available > 0 &&
-      v.attributes.some((a) => a.code === code && a.value === value),
-  );
-}
-
-/**
- * Given the current selection and a newly-clicked (code,value), pick the
- * variant that best matches: it must contain the clicked value, and among
- * those we prefer the one that overlaps most with the rest of the current
- * selection, preferring in-stock variants on ties. Returns the full
- * attribute selection for that variant.
- */
-function pickBestVariant(
-  variants: Variant[],
-  selection: Record<string, string>,
-  code: string,
-  value: string,
-): Record<string, string> {
-  const candidates = variants.filter((v) =>
-    v.attributes.some((a) => a.code === code && a.value === value),
-  );
-  if (candidates.length === 0) return { ...selection, [code]: value };
-
-  let best = candidates[0]!;
-  let bestScore = -1;
-  for (const v of candidates) {
-    let overlap = 0;
-    for (const [c, val] of Object.entries(selection)) {
-      if (c === code) continue;
-      if (v.attributes.some((a) => a.code === c && a.value === val)) overlap += 1;
-    }
-    // In-stock variants win ties so clicking lands on something buyable.
-    const score = overlap * 2 + (v.available > 0 ? 1 : 0);
-    if (score > bestScore) {
-      bestScore = score;
-      best = v;
-    }
-  }
-
-  const next: Record<string, string> = {};
-  for (const a of best.attributes) next[a.code] = a.value;
-  return next;
-}
-
-/**
- * Filters the gallery for the active variant when the product opted into
- * per-attribute images. Strategy:
- *  - find the customer's selected value for the product's image attribute
- *    (e.g. Color = "black")
- *  - show images tagged to that value, with any shared (untagged) images
- *    appended as fallback
- *  - if nothing is tagged for the value, show the full gallery
- *
- * The shared images always appear last so the value-specific shot is the
- * hero.
- */
-function pickGalleryImages(
-  product: ProductDetailView,
-  selection: Record<string, string>,
-): Media[] {
-  const code = product.imageAttributeCode;
-  if (!product.useVariantImages || !code) return product.media;
-  const selectedValue = selection[code];
-  if (!selectedValue) return product.media;
-  const tagged = product.media.filter((m) => m.attributeValue === selectedValue);
-  const shared = product.media.filter((m) => m.attributeValue === null);
-  return tagged.length > 0 ? [...tagged, ...shared] : product.media;
-}
+import {
+  type Variant,
+  type Media,
+  buildAttrGroups,
+  findVariant,
+  valueExists,
+  valueInStock,
+  pickBestVariant,
+  pickGalleryImages,
+} from "@/lib/variant-selection";
 
 export function PdpClient({
   product,
@@ -148,6 +41,11 @@ export function PdpClient({
   wishlist: { isAuthed: boolean; inWishlist: boolean };
 }) {
   const groups = React.useMemo(() => buildAttrGroups(product.variants), [product.variants]);
+  // Only attributes that actually vary become pickers; single-value ones
+  // (e.g. a jean that comes in one color) show as static metadata instead of
+  // a pointless 1-option control — while still feeding facets + filtering.
+  const choiceGroups = React.useMemo(() => groups.filter((g) => g.values.length > 1), [groups]);
+  const fixedGroups = React.useMemo(() => groups.filter((g) => g.values.length === 1), [groups]);
 
   const initial = React.useMemo(() => {
     const def = product.variants.find((v) => v.isDefault) ?? product.variants[0];
@@ -235,7 +133,27 @@ export function PdpClient({
           {off ? <Badge variant="accent">{off}% OFF</Badge> : null}
         </div>
 
-        {groups.map((g) => (
+        {fixedGroups.length > 0 ? (
+          <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
+            {fixedGroups.map((g) => {
+              const v = g.values[0]!;
+              return (
+                <div key={g.code} className="flex items-center gap-2">
+                  <span className="text-zinc-500">{g.label}:</span>
+                  {v.swatchHex ? (
+                    <span
+                      className="inline-block h-3.5 w-3.5 rounded-full border align-middle"
+                      style={{ background: v.swatchHex }}
+                    />
+                  ) : null}
+                  <span className="font-medium">{v.valueLabel}</span>
+                </div>
+              );
+            })}
+          </div>
+        ) : null}
+
+        {choiceGroups.map((g) => (
           <div key={g.code} className="space-y-3">
             <div className="flex items-center justify-between text-sm">
               <span className="font-medium">{g.label}</span>
@@ -399,33 +317,95 @@ function PdpGallery({
   active: number;
   onChange: (i: number) => void;
 }) {
-  const safe = images.length > 0 ? images : [{ url: "", altText: product.name, isPrimary: true, attributeValue: null }];
-  const main = safe[active] ?? safe[0]!;
+  const safe =
+    images.length > 0
+      ? images
+      : [{ url: "", altText: product.name, isPrimary: true, attributeValue: null }];
+  const multiple = safe.length > 1;
+
+  const autoplay = React.useRef(
+    Autoplay({ delay: 5000, stopOnInteraction: false, stopOnMouseEnter: true }),
+  );
+  const [api, setApi] = React.useState<CarouselApi | null>(null);
+  const [selected, setSelected] = React.useState(0);
+  const [lightboxOpen, setLightboxOpen] = React.useState(false);
+
+  // Keep the parent (and thumbnails) in sync with whichever slide is showing.
+  React.useEffect(() => {
+    if (!api) return;
+    const onSelect = () => {
+      const i = api.selectedScrollSnap();
+      setSelected(i);
+      onChange(i);
+    };
+    onSelect();
+    api.on("select", onSelect);
+    api.on("reInit", onSelect);
+    return () => {
+      api.off("select", onSelect);
+      api.off("reInit", onSelect);
+    };
+  }, [api, onChange]);
+
+  // External index changes (e.g. a variant swap resets to image 0) drive the
+  // carousel. Guarded so it never fights the user-driven `select` above.
+  React.useEffect(() => {
+    if (!api) return;
+    if (api.selectedScrollSnap() !== active) api.scrollTo(active);
+  }, [api, active]);
 
   return (
     <div className="space-y-3">
-      <div className="relative aspect-4/5 overflow-hidden rounded-3xl bg-zinc-100 dark:bg-zinc-900">
-        {main.url ? (
-          <Image
-            src={main.url}
-            alt={main.altText ?? product.name}
-            fill
-            priority
-            sizes="(min-width: 768px) 50vw, 100vw"
-            className="object-cover"
-          />
+      <Carousel
+        setApi={setApi}
+        opts={{ loop: multiple }}
+        plugins={multiple ? [autoplay.current] : []}
+        className="overflow-hidden rounded-3xl"
+      >
+        <CarouselContent className="ml-0">
+          {safe.map((m, i) => (
+            <CarouselItem key={i} className="pl-0">
+              <button
+                type="button"
+                onClick={() => m.url && setLightboxOpen(true)}
+                className={cn(
+                  "group relative block aspect-4/5 w-full overflow-hidden bg-zinc-100 dark:bg-zinc-900",
+                  m.url ? "cursor-zoom-in" : "cursor-default",
+                )}
+                aria-label="Open image in full screen"
+              >
+                {m.url ? (
+                  <Image
+                    src={m.url}
+                    alt={m.altText ?? product.name}
+                    fill
+                    priority={i === 0}
+                    sizes="(min-width: 768px) 50vw, 100vw"
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                ) : null}
+              </button>
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+        {multiple ? (
+          <>
+            <CarouselPrevious className="left-3 bg-background/80 backdrop-blur" />
+            <CarouselNext className="right-3 bg-background/80 backdrop-blur" />
+          </>
         ) : null}
-      </div>
-      {safe.length > 1 ? (
+      </Carousel>
+
+      {multiple ? (
         <div className="grid grid-cols-5 gap-2">
           {safe.map((m, i) => (
             <button
               key={i}
               type="button"
-              onClick={() => onChange(i)}
+              onClick={() => api?.scrollTo(i)}
               className={cn(
                 "relative aspect-square overflow-hidden rounded-xl bg-zinc-100 transition-all dark:bg-zinc-900",
-                i === active ? "ring-2 ring-foreground" : "opacity-70 hover:opacity-100",
+                i === selected ? "ring-2 ring-foreground" : "opacity-70 hover:opacity-100",
               )}
             >
               {m.url ? (
@@ -435,6 +415,65 @@ function PdpGallery({
           ))}
         </div>
       ) : null}
+
+      <PdpLightbox
+        open={lightboxOpen}
+        onOpenChange={setLightboxOpen}
+        images={safe}
+        startIndex={selected}
+        productName={product.name}
+      />
     </div>
+  );
+}
+
+function PdpLightbox({
+  open,
+  onOpenChange,
+  images,
+  startIndex,
+  productName,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  images: Media[];
+  startIndex: number;
+  productName: string;
+}) {
+  const multiple = images.length > 1;
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-5xl border-0 bg-transparent p-0 shadow-none sm:max-w-5xl">
+        <DialogTitle className="sr-only">{productName} — image viewer</DialogTitle>
+        <Carousel
+          opts={{ startIndex, loop: multiple }}
+          className="w-full px-6"
+        >
+          <CarouselContent className="ml-0">
+            {images.map((m, i) => (
+              <CarouselItem key={i} className="pl-0">
+                <div className="relative flex aspect-square w-full items-center justify-center md:aspect-video">
+                  {m.url ? (
+                    <Image
+                      src={m.url}
+                      alt={m.altText ?? productName}
+                      fill
+                      sizes="90vw"
+                      className="object-contain"
+                    />
+                  ) : null}
+                </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          {multiple ? (
+            <>
+              <CarouselPrevious className="left-2" />
+              <CarouselNext className="right-2" />
+            </>
+          ) : null}
+        </Carousel>
+      </DialogContent>
+    </Dialog>
   );
 }

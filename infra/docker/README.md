@@ -24,16 +24,8 @@ npm run dev
 
 ## URLs
 
-- Storefront: http://store.localhost:3000
-- Admin:      http://admin.localhost:3001
-
-`*.localhost` is treated as loopback automatically by modern browsers — no
-hosts-file edits required on Windows 10+, macOS, or Linux. If your browser
-balks, add to your hosts file:
-
-```
-127.0.0.1 store.localhost admin.localhost
-```
+- Storefront: http://localhost:3000
+- Admin:      http://localhost:3001
 
 ## Database
 

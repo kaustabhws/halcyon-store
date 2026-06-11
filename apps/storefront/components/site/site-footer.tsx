@@ -1,19 +1,11 @@
 import Link from "next/link";
 import { Mail, MapPin } from "lucide-react";
 import { BRAND } from "@ecom/shared/brand";
+import { getResolvedNav } from "@/lib/nav";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-const FOOTER_GROUPS = [
-  {
-    title: "Shop",
-    links: [
-      { href: "/shop/sneakers", label: "Sneakers" },
-      { href: "/shop/watches", label: "Watches" },
-      { href: "/shop/headphones", label: "Headphones" },
-      { href: "/shop", label: "All products" },
-    ],
-  },
+const STATIC_GROUPS = [
   {
     title: "Account",
     links: [
@@ -34,7 +26,19 @@ const FOOTER_GROUPS = [
   },
 ];
 
-export function SiteFooter() {
+export async function SiteFooter() {
+  const nav = await getResolvedNav();
+  const groups = [
+    {
+      title: "Shop",
+      links: [
+        ...nav.items.map((i) => ({ href: i.href, label: i.label })),
+        { href: "/shop", label: "All products" },
+      ],
+    },
+    ...STATIC_GROUPS,
+  ];
+
   return (
     <footer className="mt-32 border-t bg-muted/20">
       <div className="container-page grid gap-12 py-16 lg:grid-cols-[1.4fr_1fr_1.5fr]">
@@ -63,7 +67,7 @@ export function SiteFooter() {
         </div>
 
         <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:col-span-1">
-          {FOOTER_GROUPS.map((g) => (
+          {groups.map((g) => (
             <div key={g.title}>
               <h3 className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
                 {g.title}

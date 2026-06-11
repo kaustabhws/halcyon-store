@@ -34,13 +34,17 @@ export default async function CategoryPage({
 }) {
   const { category: slug } = await params;
   const [category, sp] = await Promise.all([
-    productRepo.getCategoryBySlug(slug),
+    productRepo.getCategoryWithChildren(slug),
     searchParams,
   ]);
   if (!category) notFound();
 
+  // Include this category plus its direct children so a parent page like
+  // /shop/men also surfaces products from Men's T-Shirts, Men's Shoes, etc.
+  const categoryIds = [category.id, ...category.children.map((c) => c.id)];
+
   const filters = parseShopSearchParams(sp, { categorySlug: slug });
-  const result = await productRepo.findProducts(filters);
+  const result = await productRepo.findProducts({ ...filters, categoryIds });
   const totalPages = Math.max(
     1,
     Math.ceil(result.totalCount / result.pageSize),

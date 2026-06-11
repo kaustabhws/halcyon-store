@@ -7,9 +7,11 @@ import { LogOut, ExternalLink } from "lucide-react";
 export function TopbarUser({
   user,
   isMock,
+  storefrontUrl,
 }: {
   user: { fullName: string | null; email: string };
   isMock: boolean;
+  storefrontUrl: string;
 }) {
   const initials = (user.fullName ?? user.email).slice(0, 2).toUpperCase();
 
@@ -42,7 +44,7 @@ export function TopbarUser({
           <DropdownMenu.Separator className="my-1 h-px bg-zinc-200 dark:bg-zinc-800" />
           <DropdownMenu.Item asChild>
             <a
-              href="http://store.localhost:3000"
+              href={storefrontUrl}
               target="_blank"
               rel="noreferrer"
               className="flex items-center gap-2 rounded-md px-3 py-2 text-sm outline-none data-[highlighted]:bg-zinc-100 dark:data-[highlighted]:bg-zinc-900"

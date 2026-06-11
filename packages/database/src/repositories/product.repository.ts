@@ -90,6 +90,12 @@ export type ProductDetailView = ProductCardView & {
 export type ProductFilters = {
   q?: string;
   categorySlug?: string;
+  /**
+   * Filter to products in ANY of these category ids. Takes precedence over
+   * `categorySlug`. Used by /shop/[category] to include a category plus its
+   * direct children (descendant browsing).
+   */
+  categoryIds?: string[];
   brandSlugs?: string[];
   /**
    * Attribute filters grouped by code. Within a code values are OR'd; across
@@ -272,7 +278,9 @@ function buildWhere(filters: ProductFilters): Prisma.ProductWhereInput {
     }
   }
 
-  if (filters.categorySlug) {
+  if (filters.categoryIds?.length) {
+    where.categories = { some: { categoryId: { in: filters.categoryIds } } };
+  } else if (filters.categorySlug) {
     where.categories = { some: { category: { slug: filters.categorySlug } } };
   }
 
@@ -666,6 +674,52 @@ export async function getCategoryBySlug(slug: string) {
   return prisma.category.findFirst({
     where: { slug },
     select: { id: true, slug: true, name: true, description: true, imageUrl: true },
+  });
+}
+
+/**
+ * Resolve a category by slug along with its direct children. Used by
+ * /shop/[slug] so a parent category page can include its children's
+ * products (descendant browsing, 2-level tree).
+ */
+export async function getCategoryWithChildren(slug: string) {
+  return prisma.category.findFirst({
+    where: { slug },
+    select: {
+      id: true,
+      slug: true,
+      name: true,
+      description: true,
+      imageUrl: true,
+      parentId: true,
+      children: {
+        orderBy: { position: "asc" },
+        select: { id: true, slug: true, name: true },
+      },
+    },
+  });
+}
+
+/**
+ * Full 2-level category tree: root categories ordered by position, each with
+ * its ordered children. Backs the configurable storefront nav + admin
+ * nav builder.
+ */
+export async function listCategoryTree() {
+  return prisma.category.findMany({
+    where: { parentId: null },
+    orderBy: { position: "asc" },
+    select: {
+      id: true,
+      slug: true,
+      name: true,
+      description: true,
+      imageUrl: true,
+      children: {
+        orderBy: { position: "asc" },
+        select: { id: true, slug: true, name: true, imageUrl: true },
+      },
+    },
   });
 }
 

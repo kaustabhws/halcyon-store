@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { User, LogOut, Package, MapPin, ChevronRight, UserCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -13,7 +12,6 @@ export function AccountChip({
 }: {
   session: { name: string | null; email: string } | null;
 }) {
-  const router = useRouter();
   const [pending, startTransition] = React.useTransition();
 
   if (!session) {
@@ -60,7 +58,6 @@ export function AccountChip({
               e.preventDefault();
               startTransition(async () => {
                 await logoutAction();
-                router.refresh();
               });
             }}
             className="flex w-full cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm text-rose-600 outline-none data-[highlighted]:bg-rose-500/10"

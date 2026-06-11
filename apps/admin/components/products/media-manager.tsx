@@ -3,10 +3,13 @@
 import * as React from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Star, Trash2, Plus, Tag } from "lucide-react";
-import { CldUploadWidget } from "next-cloudinary";
+import { Star, Trash2, Tag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import {
+  ImageUploader,
+  type UploadedImage,
+} from "@/components/media/image-uploader";
 import {
   Select,
   SelectContent,
@@ -55,6 +58,7 @@ export function ProductMediaManager({
   imageAttributeId,
   useVariantImages,
   cloudName,
+  cloudinaryApiKey,
   cloudinaryConfigured,
 }: {
   productId: string;
@@ -65,6 +69,7 @@ export function ProductMediaManager({
   imageAttributeId: string | null;
   useVariantImages: boolean;
   cloudName: string | null;
+  cloudinaryApiKey: string | null;
   cloudinaryConfigured: boolean;
 }) {
   const router = useRouter();
@@ -81,13 +86,13 @@ export function ProductMediaManager({
     return m;
   }, [chosenAttribute]);
 
-  function addFromUpload(url: string, publicId: string) {
+  function addFromUpload(img: UploadedImage) {
     setError(null);
     startTransition(async () => {
       const fd = new FormData();
       fd.set("productId", productId);
-      fd.set("url", url);
-      fd.set("cloudinaryId", publicId);
+      fd.set("url", img.url);
+      if (img.publicId) fd.set("cloudinaryId", img.publicId);
       const res = await addProductMediaAction(fd);
       if (!res.ok) setError(res.error);
       else router.refresh();
@@ -244,7 +249,9 @@ export function ProductMediaManager({
                       ) : (
                         <Tag className="h-2.5 w-2.5" />
                       )}
-                      <span className="max-w-[10ch] truncate">{tagged.label}</span>
+                      <span className="max-w-[10ch] truncate">
+                        {tagged.label}
+                      </span>
                     </span>
                   ) : null}
                   <div className="absolute inset-x-0 bottom-0 flex items-center justify-end gap-1 bg-linear-to-t from-black/70 to-transparent p-2 opacity-0 transition-opacity group-hover:opacity-100">
@@ -315,117 +322,22 @@ export function ProductMediaManager({
         </Alert>
       ) : null}
 
-      {cloudinaryConfigured && cloudName ? (
-        <CldUploadWidget
-          signatureEndpoint="/api/cloudinary/sign"
-          options={{
-            cloudName,
-            sources: ["local", "url", "camera"],
-            multiple: true,
-            folder: "ecom/products",
-            maxFiles: 12,
-            clientAllowedFormats: ["png", "jpg", "jpeg", "webp", "avif"],
-            maxFileSize: 10 * 1024 * 1024,
-          }}
-          onSuccess={(result) => {
-            const info = result?.info;
-            if (info && typeof info !== "string" && "secure_url" in info && "public_id" in info) {
-              addFromUpload(info.secure_url as string, info.public_id as string);
-            }
-          }}
-        >
-          {({ open }) => (
-            <Button type="button" variant="outline" size="sm" onClick={() => open()}>
-              <Plus /> Upload images
-            </Button>
-          )}
-        </CldUploadWidget>
-      ) : (
-        <Alert>
-          <AlertDescription className="text-xs">
-            Cloudinary isn&rsquo;t configured — paste a URL below or set up
-            Cloudinary keys to enable direct uploads.
-          </AlertDescription>
-        </Alert>
-      )}
-
-      <ManualUrlAdd
-        productId={productId}
-        pending={pending}
-        setError={setError}
-        onAdded={() => router.refresh()}
+      <ImageUploader
+        cloudName={cloudName}
+        apiKey={cloudinaryApiKey}
+        configured={cloudinaryConfigured}
+        folder="ecom/products"
+        multiple
+        onUploaded={addFromUpload}
       />
 
       {chosenAttribute ? (
         <p className="text-xs text-muted-foreground">
-          Tip: tag each image with the {chosenAttribute.label.toLowerCase()} it
+          Tip: tag each image with the {chosenAttribute.label.toLowerCase()} {" "} it
           represents. Images left as &ldquo;Shared&rdquo; show for every{" "}
           {chosenAttribute.label.toLowerCase()} as a fallback.
         </p>
       ) : null}
     </div>
-  );
-}
-
-function ManualUrlAdd({
-  productId,
-  pending,
-  setError,
-  onAdded,
-}: {
-  productId: string;
-  pending: boolean;
-  setError: (e: string | null) => void;
-  onAdded: () => void;
-}) {
-  const [open, setOpen] = React.useState(false);
-  const formRef = React.useRef<HTMLFormElement>(null);
-
-  if (!open) {
-    return (
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        className="text-xs text-muted-foreground underline-offset-4 hover:underline"
-      >
-        or add a URL manually
-      </button>
-    );
-  }
-
-  return (
-    <form
-      ref={formRef}
-      action={async (fd) => {
-        fd.set("productId", productId);
-        setError(null);
-        const res = await addProductMediaAction(fd);
-        if (!res.ok) setError(res.error);
-        else {
-          formRef.current?.reset();
-          setOpen(false);
-          onAdded();
-        }
-      }}
-      className="flex flex-wrap gap-2 rounded-md border p-3"
-    >
-      <input
-        name="url"
-        required
-        placeholder="https://…"
-        className="h-9 min-w-0 flex-1 rounded-md border border-input bg-transparent px-3 text-sm focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 outline-none"
-      />
-      <input
-        name="altText"
-        placeholder="Alt text"
-        className="h-9 min-w-0 flex-1 rounded-md border border-input bg-transparent px-3 text-sm focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 outline-none"
-      />
-      <Button type="submit" size="sm" disabled={pending}>
-        Add
-      </Button>
-      <Button type="button" size="sm" variant="ghost" onClick={() => setOpen(false)}>
-        Cancel
-      </Button>
-    </form>
   );
 }
