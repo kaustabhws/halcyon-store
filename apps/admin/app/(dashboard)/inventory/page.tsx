@@ -1,10 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
+import { SearchInput, FilterToggle } from "@/components/common/table-filters";
 import {
   Table,
   TableHeader,
@@ -80,24 +77,10 @@ export default async function InventoryPage({
         </div>
       </header>
 
-      <form className="flex flex-wrap items-center gap-2" action="/inventory">
-        <Input
-          name="q"
-          defaultValue={q ?? ""}
-          placeholder="Search SKU or product name…"
-          className="max-w-sm"
-        />
-        <Label
-          htmlFor="lowOnly"
-          className="flex h-9 cursor-pointer items-center gap-2 rounded-md border border-zinc-200 bg-background px-3 text-sm dark:border-zinc-800"
-        >
-          <Checkbox id="lowOnly" name="lowOnly" value="1" defaultChecked={lowOnly} />
-          <span>Low stock only</span>
-        </Label>
-        <Button type="submit" variant="outline" size="sm" className="h-9">
-          Apply
-        </Button>
-      </form>
+      <div className="flex flex-wrap items-center gap-2">
+        <SearchInput placeholder="Search SKU or product name…" />
+        <FilterToggle paramKey="lowOnly" label="Low stock only" activeValue="1" />
+      </div>
 
       <Card>
         <CardContent className="p-0">

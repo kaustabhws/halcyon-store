@@ -2,11 +2,15 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { Plus, Minus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { adjustInventoryAction } from "@/lib/inventory-actions";
 
+/**
+ * Inline inventory editor. Instead of stepping +1/-1, the admin types the
+ * target on-hand quantity and hits Apply. We translate that absolute number
+ * into a signed delta for the (delta-based, movement-logging) server action.
+ */
 export function AdjustInventoryRow({
   variantId,
   warehouseId,
@@ -22,21 +26,38 @@ export function AdjustInventoryRow({
   const [open, setOpen] = React.useState(false);
   const [pending, startTransition] = React.useTransition();
   const [err, setErr] = React.useState<string | null>(null);
+  const [value, setValue] = React.useState(String(onHand));
+  const [reason, setReason] = React.useState("");
 
-  function adjust(direction: 1 | -1) {
-    const form = document.getElementById(`adj-form-${variantId}`) as HTMLFormElement | null;
-    if (!form) return;
-    const fd = new FormData(form);
-    const qty = Math.max(0, Math.floor(Number(fd.get("qty") ?? 0)));
-    if (qty === 0) return;
-    const reason = String(fd.get("reason") ?? "").trim() || "Manual adjustment";
+  function start() {
+    setValue(String(onHand));
+    setReason("");
+    setErr(null);
+    setOpen(true);
+  }
+
+  function apply() {
+    const target = Math.floor(Number(value));
+    if (!Number.isFinite(target) || target < 0) {
+      setErr("Enter a valid quantity");
+      return;
+    }
+    if (target < reserved) {
+      setErr(`Cannot go below reserved (${reserved})`);
+      return;
+    }
+    const delta = target - onHand;
+    if (delta === 0) {
+      setOpen(false);
+      return;
+    }
     setErr(null);
     startTransition(async () => {
       const send = new FormData();
       send.set("variantId", variantId);
       send.set("warehouseId", warehouseId);
-      send.set("delta", String(direction * qty));
-      send.set("reason", reason);
+      send.set("delta", String(delta));
+      send.set("reason", reason.trim() || "Manual adjustment");
       const res = await adjustInventoryAction(send);
       if (!res.ok) setErr(res.error);
       else {
@@ -48,38 +69,48 @@ export function AdjustInventoryRow({
 
   if (!open) {
     return (
-      <Button type="button" variant="outline" size="sm" onClick={() => setOpen(true)}>
+      <Button type="button" variant="outline" size="sm" onClick={start}>
         Adjust
       </Button>
     );
   }
 
   return (
-    <form id={`adj-form-${variantId}`} className="flex items-center gap-2">
+    <div className="flex items-center gap-2">
       <Input
-        name="qty"
         type="number"
-        min={1}
-        defaultValue={1}
-        className="h-9 w-20"
-        aria-label="Quantity"
+        min={0}
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            apply();
+          }
+        }}
+        className="h-9 w-24"
+        aria-label="On-hand quantity"
       />
       <Input
-        name="reason"
+        value={reason}
+        onChange={(e) => setReason(e.target.value)}
         placeholder="Reason"
         className="h-9 w-44"
         aria-label="Reason"
       />
-      <Button type="button" size="icon" variant="outline" disabled={pending} onClick={() => adjust(1)} aria-label="Add">
-        <Plus className="h-4 w-4" />
+      <Button type="button" size="sm" disabled={pending} onClick={apply}>
+        {pending ? "Applying…" : "Apply"}
       </Button>
-      <Button type="button" size="icon" variant="outline" disabled={pending || onHand - reserved <= 0} onClick={() => adjust(-1)} aria-label="Subtract">
-        <Minus className="h-4 w-4" />
-      </Button>
-      <Button type="button" size="sm" variant="ghost" onClick={() => setOpen(false)}>
+      <Button
+        type="button"
+        size="sm"
+        variant="ghost"
+        disabled={pending}
+        onClick={() => setOpen(false)}
+      >
         Cancel
       </Button>
       {err ? <span className="text-xs text-rose-600">{err}</span> : null}
-    </form>
+    </div>
   );
 }

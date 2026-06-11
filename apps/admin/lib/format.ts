@@ -11,6 +11,11 @@ export function formatNumber(n: number): string {
   return new Intl.NumberFormat("en-IN").format(n);
 }
 
+/** Like formatPrice but for already-summed paise held as a number. */
+export function formatPaise(paise: number, currency = "INR"): string {
+  return formatPrice(BigInt(Math.round(paise)), currency);
+}
+
 export function formatDate(d: Date | string): string {
   const date = typeof d === "string" ? new Date(d) : d;
   return new Intl.DateTimeFormat("en-IN", { dateStyle: "medium" }).format(date);

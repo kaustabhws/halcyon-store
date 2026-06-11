@@ -5,11 +5,20 @@ model Review {
   productId   String
   customerId  String
   orderItemId String?  // verified-purchase signal
-  rating      Int      // 1..5
+  rating      Int      // 1..5  — latest (working) version, may be awaiting moderation
   title       String?
   body        String   @db.Text
   status      String   @default("PENDING") // PENDING|APPROVED|REJECTED|SPAM
   helpfulCount Int     @default(0)
+
+  // Published snapshot — the last admin-approved version, shown publicly on the
+  // PDP. Decoupling this from the working copy above lets an already-approved
+  // review stay live while the customer's edit waits in moderation, and gives
+  // the admin a clean before/after diff. Null until first approval.
+  publishedRating Int?
+  publishedTitle  String?
+  publishedBody   String?  @db.Text
+  publishedAt     DateTime?
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -20,6 +29,7 @@ model Review {
 
   @@unique([productId, customerId])
   @@index([productId, status, createdAt])
+  @@index([productId, publishedAt])
   @@index([customerId])
   @@index([deletedAt])
 }

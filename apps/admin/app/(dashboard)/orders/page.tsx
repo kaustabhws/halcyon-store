@@ -2,15 +2,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { SearchInput, FilterSelect } from "@/components/common/table-filters";
 import {
   Table,
   TableHeader,
@@ -26,7 +18,6 @@ export const dynamic = "force-dynamic";
 export const metadata = { title: "Orders" };
 
 const PAGE_SIZE = 25;
-const ALL_STATUSES = "__ALL__";
 
 const STATUSES = [
   "PENDING",
@@ -96,33 +87,15 @@ export default async function OrdersPage({
         </div>
       </header>
 
-      <form className="flex flex-wrap gap-2" action="/orders">
-        <Input
-          name="q"
-          defaultValue={q ?? ""}
-          placeholder="Order number or customer email…"
-          className="max-w-sm"
+      <div className="flex flex-wrap gap-2">
+        <SearchInput placeholder="Order number or customer email…" />
+        <FilterSelect
+          paramKey="status"
+          placeholder="All statuses"
+          allLabel="All statuses"
+          options={STATUSES.map((s) => ({ value: s, label: s }))}
         />
-        <Select
-          name="status"
-          defaultValue={status ?? ALL_STATUSES}
-        >
-          <SelectTrigger className="h-9 min-w-44">
-            <SelectValue placeholder="All statuses" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value={ALL_STATUSES}>All statuses</SelectItem>
-          {STATUSES.map((s) => (
-              <SelectItem key={s} value={s}>
-              {s}
-              </SelectItem>
-          ))}
-          </SelectContent>
-        </Select>
-        <Button type="submit" variant="outline" size="sm" className="h-9">
-          Apply
-        </Button>
-      </form>
+      </div>
 
       <Card>
         <CardContent className="p-0">

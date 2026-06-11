@@ -5,14 +5,7 @@ import { prisma } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { SearchInput, FilterSelect } from "@/components/common/table-filters";
 import {
   Table,
   TableHeader,
@@ -28,7 +21,6 @@ export const dynamic = "force-dynamic";
 export const metadata = { title: "Products" };
 
 const PAGE_SIZE = 20;
-const ALL_STATUSES = "__ALL__";
 
 type Search = { q?: string; status?: string; page?: string };
 
@@ -92,34 +84,19 @@ export default async function ProductsPage({
         </Button>
       </header>
 
-      <form className="flex flex-wrap gap-2" action="/products">
-        <Input
-          name="q"
-          defaultValue={q ?? ""}
-          placeholder="Search by name or slug…"
-          className="max-w-sm"
+      <div className="flex flex-wrap gap-2">
+        <SearchInput placeholder="Search by name or slug…" />
+        <FilterSelect
+          paramKey="status"
+          placeholder="All statuses"
+          allLabel="All statuses"
+          options={[
+            { value: "ACTIVE", label: "Active" },
+            { value: "DRAFT", label: "Draft" },
+            { value: "ARCHIVED", label: "Archived" },
+          ]}
         />
-        <Select
-          name="status"
-          defaultValue={status ?? ALL_STATUSES}
-        >
-          <SelectTrigger className="h-9 min-w-44">
-            <SelectValue placeholder="All statuses" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value={ALL_STATUSES}>All statuses</SelectItem>
-            <SelectItem value="ACTIVE">Active</SelectItem>
-            <SelectItem value="DRAFT">Draft</SelectItem>
-            <SelectItem value="ARCHIVED">Archived</SelectItem>
-          </SelectContent>
-        </Select>
-        <button
-          type="submit"
-          className="h-9 rounded-md border border-zinc-200 bg-background px-4 text-sm hover:bg-muted dark:border-zinc-800"
-        >
-          Apply
-        </button>
-      </form>
+      </div>
 
       <Card>
         <CardContent className="p-0">

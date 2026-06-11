@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import { SearchInput } from "@/components/common/table-filters";
 import {
   Table,
   TableHeader,
@@ -12,7 +12,6 @@ import {
 } from "@/components/ui/table";
 import { formatPrice, formatDate } from "@/lib/format";
 import type { Prisma } from "@ecom/database";
-import { Button } from "@/components/ui/button";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Customers" };
@@ -73,20 +72,9 @@ export default async function CustomersPage({
         </div>
       </header>
 
-      <form className="flex flex-wrap gap-2" action="/customers">
-        <Input
-          name="q"
-          defaultValue={q ?? ""}
-          placeholder="Search by name or email…"
-          className="max-w-sm"
-        />
-        <Button
-          type="submit"
-          className="h-9 rounded-md border border-zinc-200 bg-background px-4 text-sm hover:bg-muted dark:border-zinc-800"
-        >
-          Apply
-        </Button>
-      </form>
+      <div className="flex flex-wrap gap-2">
+        <SearchInput placeholder="Search by name or email…" />
+      </div>
 
       <Card>
         <CardContent className="p-0">

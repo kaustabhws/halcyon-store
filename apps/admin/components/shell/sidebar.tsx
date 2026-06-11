@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
+  BarChart3,
   Package,
   ShoppingBag,
   Users,
@@ -32,6 +33,7 @@ export const NAV: { section: string; items: NavItem[] }[] = [
     section: "Overview",
     items: [
       { href: "/", label: "Dashboard", icon: LayoutDashboard },
+      { href: "/analytics", label: "Analytics", icon: BarChart3 },
       { href: "/orders", label: "Orders", icon: ShoppingBag },
     ],
   },

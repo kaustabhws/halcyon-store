@@ -16,5 +16,9 @@ export type {
   OrderDetail,
   AddressSnapshot,
 } from "./order.repository.ts";
-export type { ReviewView } from "./review.repository.ts";
+export type {
+  ReviewView,
+  PublicReview,
+  PublishedSnapshot,
+} from "./review.repository.ts";
 export type { WishlistItemView } from "./wishlist.repository.ts";

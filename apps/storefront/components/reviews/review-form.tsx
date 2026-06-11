@@ -2,14 +2,11 @@
 
 import * as React from "react";
 import { useActionState } from "react";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { StarRatingInput } from "@/components/ui/star-rating-input";
+import { ReviewFields } from "./review-fields";
 import {
   submitReviewAction,
   type ReviewFormState,
@@ -23,10 +20,13 @@ type Mode =
 export function ReviewForm({
   productId,
   mode,
+  defaultValues,
 }: {
   productId: string;
   mode: Mode;
+  defaultValues?: { rating?: number; title?: string | null; body?: string };
 }) {
+  const router = useRouter();
   const [state, action, pending] = useActionState<
     ReviewFormState | undefined,
     FormData
@@ -38,9 +38,10 @@ export function ReviewForm({
     if (state?.ok) {
       toast.success("Thanks — your review is in moderation.");
       formRef.current?.reset();
+      router.refresh();
     }
     if (state?.error) toast.error(state.error);
-  }, [state]);
+  }, [state, router]);
 
   if (mode.kind === "anonymous") {
     return (
@@ -73,45 +74,7 @@ export function ReviewForm({
       className="space-y-4 rounded-2xl border bg-card p-6"
     >
       <input type="hidden" name="productId" value={productId} />
-      <div className="space-y-1.5">
-        <Label>Your rating</Label>
-        <StarRatingInput name="rating" required />
-        {state?.fieldErrors?.rating ? (
-          <p className="text-xs text-destructive">{state.fieldErrors.rating[0]}</p>
-        ) : null}
-      </div>
-      <div className="space-y-1.5">
-        <Label htmlFor="title">Headline (optional)</Label>
-        <Input
-          id="title"
-          name="title"
-          placeholder="A quick summary of your experience"
-          maxLength={120}
-        />
-      </div>
-      <div className="space-y-1.5">
-        <Label htmlFor="body">Your review</Label>
-        <Textarea
-          id="body"
-          name="body"
-          required
-          rows={5}
-          maxLength={2000}
-          placeholder="What did you like? What could be better?"
-        />
-        {state?.fieldErrors?.body ? (
-          <p className="text-xs text-destructive">{state.fieldErrors.body[0]}</p>
-        ) : (
-          <p className="text-xs text-muted-foreground">
-            Reviews are checked by our team before going live.
-          </p>
-        )}
-      </div>
-      {state?.error ? (
-        <Alert variant="destructive">
-          <AlertDescription>{state.error}</AlertDescription>
-        </Alert>
-      ) : null}
+      <ReviewFields state={state} defaultValues={defaultValues} />
       <Button type="submit" disabled={pending}>
         {pending ? "Submitting…" : "Submit review"}
       </Button>

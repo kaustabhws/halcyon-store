@@ -21,6 +21,8 @@ export {
   type OrderDetail,
   type AddressSnapshot,
   type ReviewView,
+  type PublicReview,
+  type PublishedSnapshot,
   type WishlistItemView,
 } from "@ecom/database";
 

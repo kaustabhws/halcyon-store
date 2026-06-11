@@ -122,7 +122,7 @@ export async function ReviewSection({
                 </p>
                 <p className="text-xs text-muted-foreground">
                   {r.customerName} ·{" "}
-                  {new Date(r.createdAt).toLocaleDateString("en-IN", {
+                  {new Date(r.publishedAt).toLocaleDateString("en-IN", {
                     dateStyle: "medium",
                   })}
                 </p>

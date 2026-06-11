@@ -8,6 +8,14 @@ const reviewInclude = {
 
 type ReviewRow = Prisma.ReviewGetPayload<{ include: typeof reviewInclude }>;
 
+/** The last admin-approved version of a review, shown publicly. */
+export type PublishedSnapshot = {
+  rating: number;
+  title: string | null;
+  body: string;
+  publishedAt: Date;
+};
+
 export type ReviewView = {
   id: string;
   productId: string;
@@ -15,6 +23,7 @@ export type ReviewView = {
   productSlug: string;
   customerId: string;
   customerName: string;
+  /** Working copy — the customer's latest submitted version. */
   rating: number;
   title: string | null;
   body: string;
@@ -22,6 +31,14 @@ export type ReviewView = {
   helpfulCount: number;
   verifiedPurchase: boolean;
   createdAt: Date;
+  updatedAt: Date;
+  /** Last approved version, or null if never approved. */
+  published: PublishedSnapshot | null;
+  /**
+   * True when an already-published review has unapproved edits sitting in
+   * moderation (working copy differs and status is back to PENDING).
+   */
+  hasPendingEdit: boolean;
 };
 
 function customerLabel(c: ReviewRow["customer"]): string {
@@ -32,7 +49,20 @@ function customerLabel(c: ReviewRow["customer"]): string {
   return local.length <= 2 ? "Customer" : `${local.slice(0, 2)}***`;
 }
 
+function publishedOf(r: ReviewRow): PublishedSnapshot | null {
+  if (!r.publishedAt || r.publishedRating == null || r.publishedBody == null) {
+    return null;
+  }
+  return {
+    rating: r.publishedRating,
+    title: r.publishedTitle,
+    body: r.publishedBody,
+    publishedAt: r.publishedAt,
+  };
+}
+
 function toView(r: ReviewRow): ReviewView {
+  const published = publishedOf(r);
   return {
     id: r.id,
     productId: r.productId,
@@ -47,17 +77,41 @@ function toView(r: ReviewRow): ReviewView {
     helpfulCount: r.helpfulCount,
     verifiedPurchase: Boolean(r.orderItemId),
     createdAt: r.createdAt,
+    updatedAt: r.updatedAt,
+    published,
+    hasPendingEdit:
+      published != null &&
+      r.status !== "APPROVED" &&
+      (r.rating !== published.rating ||
+        r.title !== published.title ||
+        r.body !== published.body),
   };
 }
 
 /**
- * Public reviews on a PDP. Only approved, soft-delete-respecting rows.
+ * A single public-facing review on a PDP — always the published snapshot, so
+ * an in-moderation edit never changes or hides what shoppers already saw.
+ */
+export type PublicReview = {
+  id: string;
+  customerName: string;
+  rating: number;
+  title: string | null;
+  body: string;
+  verifiedPurchase: boolean;
+  publishedAt: Date;
+};
+
+/**
+ * Public reviews on a PDP. Anything that has ever been approved (publishedAt
+ * set) and is not soft-deleted shows its last-approved snapshot — even if the
+ * customer has a newer edit awaiting re-moderation.
  */
 export async function listProductReviews(
   productId: string,
   opts: { page?: number; pageSize?: number } = {},
 ): Promise<{
-  items: ReviewView[];
+  items: PublicReview[];
   totalCount: number;
   page: number;
   pageSize: number;
@@ -69,14 +123,14 @@ export async function listProductReviews(
 
   const where: Prisma.ReviewWhereInput = {
     productId,
-    status: "APPROVED",
+    publishedAt: { not: null },
     deletedAt: null,
   };
 
   const [rows, totalCount, agg] = await Promise.all([
     prisma.review.findMany({
       where,
-      orderBy: [{ helpfulCount: "desc" }, { createdAt: "desc" }],
+      orderBy: [{ helpfulCount: "desc" }, { publishedAt: "desc" }],
       skip: (page - 1) * pageSize,
       take: pageSize,
       include: reviewInclude,
@@ -84,7 +138,7 @@ export async function listProductReviews(
     prisma.review.count({ where }),
     prisma.review.findMany({
       where,
-      select: { rating: true },
+      select: { publishedRating: true },
     }),
   ]);
 
@@ -92,16 +146,33 @@ export async function listProductReviews(
     1: 0, 2: 0, 3: 0, 4: 0, 5: 0,
   };
   let sum = 0;
+  let counted = 0;
   for (const r of agg) {
-    sum += r.rating;
-    if (r.rating >= 1 && r.rating <= 5) {
-      distribution[r.rating as 1 | 2 | 3 | 4 | 5] += 1;
+    const rating = r.publishedRating;
+    if (rating == null) continue;
+    sum += rating;
+    counted += 1;
+    if (rating >= 1 && rating <= 5) {
+      distribution[rating as 1 | 2 | 3 | 4 | 5] += 1;
     }
   }
-  const averageRating = agg.length > 0 ? sum / agg.length : null;
+  const averageRating = counted > 0 ? sum / counted : null;
+
+  const items: PublicReview[] = rows.map((r) => {
+    const pub = publishedOf(r)!;
+    return {
+      id: r.id,
+      customerName: customerLabel(r.customer),
+      rating: pub.rating,
+      title: pub.title,
+      body: pub.body,
+      verifiedPurchase: Boolean(r.orderItemId),
+      publishedAt: pub.publishedAt,
+    };
+  });
 
   return {
-    items: rows.map(toView),
+    items,
     totalCount,
     page,
     pageSize,
@@ -111,8 +182,24 @@ export async function listProductReviews(
 }
 
 /**
+ * Every review this customer has written (any status, excluding hard-hidden
+ * soft-deletes). Powers the "Your reviews" list in /account/reviews — shows the
+ * working copy, current status, and (if any) the published snapshot.
+ */
+export async function listCustomerReviews(
+  customerId: string,
+): Promise<ReviewView[]> {
+  const rows = await prisma.review.findMany({
+    where: { customerId, deletedAt: null },
+    orderBy: { updatedAt: "desc" },
+    include: reviewInclude,
+  });
+  return rows.map(toView);
+}
+
+/**
  * Order items that this customer has purchased and not yet reviewed. Powers
- * the "Leave a review" surface in /account/orders.
+ * the "Leave a review" surface in /account/orders and /account/reviews.
  */
 export async function listReviewableItemsForCustomer(
   customerId: string,
@@ -168,16 +255,35 @@ export async function listReviewableItemsForCustomer(
     },
   });
 
-  return items.map((it) => ({
-    orderItemId: it.id,
-    orderId: it.order.id,
-    orderNumber: it.order.orderNumber,
-    productId: it.variant.product.id,
-    productName: it.variant.product.name,
-    productSlug: it.variant.product.slug,
-    primaryImageUrl: it.variant.product.media[0]?.url ?? null,
-    purchasedAt: it.order.placedAt,
-  }));
+  // De-dupe by product — a customer can buy the same product across multiple
+  // orders, but we only want one "write a review" prompt per product.
+  const seen = new Set<string>();
+  const out: Array<{
+    orderItemId: string;
+    orderId: string;
+    orderNumber: string;
+    productId: string;
+    productName: string;
+    productSlug: string;
+    primaryImageUrl: string | null;
+    purchasedAt: Date;
+  }> = [];
+  for (const it of items) {
+    const productId = it.variant.product.id;
+    if (seen.has(productId)) continue;
+    seen.add(productId);
+    out.push({
+      orderItemId: it.id,
+      orderId: it.order.id,
+      orderNumber: it.order.orderNumber,
+      productId,
+      productName: it.variant.product.name,
+      productSlug: it.variant.product.slug,
+      primaryImageUrl: it.variant.product.media[0]?.url ?? null,
+      purchasedAt: it.order.placedAt,
+    });
+  }
+  return out;
 }
 
 /**

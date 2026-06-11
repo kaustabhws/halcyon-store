@@ -98,16 +98,63 @@ export default async function ReviewsPage({
                         >
                           {r.status}
                         </Badge>
+                        {r.hasPendingEdit ? (
+                          <Badge variant="accent">Edited — re-review</Badge>
+                        ) : null}
                         {r.verifiedPurchase ? (
                           <Badge variant="outline">Verified buyer</Badge>
                         ) : null}
                       </div>
-                      {r.title ? (
-                        <p className="text-sm font-medium">{r.title}</p>
-                      ) : null}
-                      <p className="text-sm leading-relaxed text-foreground/85">
-                        {r.body}
-                      </p>
+
+                      {r.hasPendingEdit && r.published ? (
+                        // Before/after: what the customer changed since their
+                        // last approved version. Approving replaces the public
+                        // snapshot with the proposed edit.
+                        <div className="mt-1 grid gap-2 sm:grid-cols-2">
+                          <div className="rounded-lg border border-dashed bg-muted/40 p-3">
+                            <p className="text-[11px] font-medium uppercase tracking-widest text-muted-foreground">
+                              Previously approved
+                            </p>
+                            <div className="mt-1.5">
+                              <Stars value={r.published.rating} />
+                            </div>
+                            {r.published.title ? (
+                              <p className="mt-1 text-sm font-medium">
+                                {r.published.title}
+                              </p>
+                            ) : null}
+                            <p className="mt-0.5 text-sm leading-relaxed text-foreground/70">
+                              {r.published.body}
+                            </p>
+                          </div>
+                          <div className="rounded-lg border border-amber-500/40 bg-amber-500/5 p-3">
+                            <p className="text-[11px] font-medium uppercase tracking-widest text-amber-700 dark:text-amber-400">
+                              Proposed edit
+                            </p>
+                            <div className="mt-1.5">
+                              <Stars value={r.rating} />
+                            </div>
+                            {r.title ? (
+                              <p className="mt-1 text-sm font-medium">
+                                {r.title}
+                              </p>
+                            ) : null}
+                            <p className="mt-0.5 text-sm leading-relaxed text-foreground/85">
+                              {r.body}
+                            </p>
+                          </div>
+                        </div>
+                      ) : (
+                        <>
+                          {r.title ? (
+                            <p className="text-sm font-medium">{r.title}</p>
+                          ) : null}
+                          <p className="text-sm leading-relaxed text-foreground/85">
+                            {r.body}
+                          </p>
+                        </>
+                      )}
+
                       <p className="text-xs text-muted-foreground">
                         {r.customerName} ·{" "}
                         <Link

@@ -27,14 +27,39 @@ export async function moderateReviewAction(
 
   const existing = await prisma.review.findUnique({
     where: { id: parsed.data.reviewId },
-    select: { id: true, status: true, productId: true, body: true },
+    select: {
+      id: true,
+      status: true,
+      productId: true,
+      rating: true,
+      title: true,
+      body: true,
+    },
   });
   if (!existing) return { ok: false, error: "Review not found" };
+
+  // On approval, promote the working copy into the published snapshot — this
+  // is the version shown publicly on the PDP. Reject/Spam leave the snapshot
+  // untouched, so a previously-approved review whose edit was rejected keeps
+  // its old approved version live.
+  const data: {
+    status: string;
+    publishedRating?: number;
+    publishedTitle?: string | null;
+    publishedBody?: string;
+    publishedAt?: Date;
+  } = { status: parsed.data.status };
+  if (parsed.data.status === "APPROVED") {
+    data.publishedRating = existing.rating;
+    data.publishedTitle = existing.title;
+    data.publishedBody = existing.body;
+    data.publishedAt = new Date();
+  }
 
   await prisma.$transaction(async (tx) => {
     await tx.review.update({
       where: { id: existing.id },
-      data: { status: parsed.data.status },
+      data,
     });
     await tx.auditLog.create({
       data: {
