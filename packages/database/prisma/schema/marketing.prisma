@@ -13,6 +13,8 @@ model Coupon {
   minSubtotalMinor  BigInt?
   maxRedemptions    Int?
   perCustomerLimit  Int?
+  /** When true, only customers with no prior paid order can redeem this. */
+  firstOrderOnly    Boolean        @default(false)
   validFrom         DateTime?
   validTo           DateTime?
   active            Boolean        @default(true)

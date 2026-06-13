@@ -1,5 +1,20 @@
 import { prisma } from "../client.ts";
 import type { Prisma } from "@prisma/client";
+import {
+  validateCoupon,
+  applyCoupon,
+  couponRowToInput,
+} from "@ecom/shared/coupons";
+
+/** Statuses that count as a paid purchase (for firstOrderOnly eligibility). */
+const PAID_ORDER_STATUSES = [
+  "CONFIRMED",
+  "PROCESSING",
+  "SHIPPED",
+  "DELIVERED",
+  "RETURNED",
+  "REFUNDED",
+] as const;
 
 const orderInclude = {
   items: {
@@ -196,30 +211,43 @@ export async function createOrderFromCart(input: {
     // every mutation, but races (a coupon hitting maxRedemptions between cart
     // and checkout) are possible. We don't fail the order on coupon issues —
     // we just drop the discount.
+    // Re-validate the coupon at order time using the SAME engine the cart uses
+    // (validateCoupon), so every rule — dates, min-subtotal, per-customer
+    // limit, firstOrderOnly — is enforced here too, not just at cart-apply.
+    // Races (a coupon expiring or the customer becoming ineligible between cart
+    // and checkout) drop the discount rather than failing the order.
     let couponCode: string | null = null;
     let discountMinor = 0n;
-    let appliedCouponId: string | null = null;
     if (cartRead.couponCode) {
       const couponRow = await tx.coupon.findUnique({
         where: { code: cartRead.couponCode },
       });
-      if (
-        couponRow &&
-        couponRow.deletedAt == null &&
-        couponRow.active &&
-        (couponRow.maxRedemptions == null ||
-          couponRow.redemptionsCount < couponRow.maxRedemptions)
-      ) {
-        if (couponRow.type === "PERCENT") {
-          discountMinor =
-            (subtotal * BigInt(Math.max(0, Math.min(100, couponRow.value)))) /
-            100n;
-        } else if (couponRow.type === "FIXED") {
-          const requested = BigInt(couponRow.value);
-          discountMinor = requested > subtotal ? subtotal : requested;
+      if (couponRow && couponRow.deletedAt == null) {
+        const [customerRedemptionCount, priorPaid] = await Promise.all([
+          tx.couponRedemption.count({
+            where: { couponId: couponRow.id, customerId: input.customerId },
+          }),
+          tx.order.count({
+            where: {
+              customerId: input.customerId,
+              status: { in: [...PAID_ORDER_STATUSES] },
+            },
+          }),
+        ]);
+        const couponInput = {
+          ...couponRowToInput(couponRow),
+          customerRedemptionCount,
+          customerHasPriorPaidOrder: priorPaid > 0,
+        };
+        const ctx = {
+          subtotalMinor: subtotal,
+          shippingMinor: 0n,
+          currency: cartRead.currency,
+        };
+        if (validateCoupon(couponInput, ctx).ok) {
+          discountMinor = applyCoupon(couponInput, ctx).discountMinor;
+          couponCode = couponRow.code;
         }
-        couponCode = couponRow.code;
-        appliedCouponId = couponRow.id;
       }
     }
 
@@ -279,34 +307,18 @@ export async function createOrderFromCart(input: {
       },
     });
 
-    // Record coupon redemption + bump counter. Done after the order row
-    // exists so the FK is valid.
-    if (appliedCouponId && couponCode) {
-      await tx.couponRedemption.create({
-        data: {
-          couponId: appliedCouponId,
-          customerId: input.customerId,
-          orderId: order.id,
-        },
-      });
-      await tx.coupon.update({
-        where: { id: appliedCouponId },
-        data: { redemptionsCount: { increment: 1 } },
-      });
-    }
+    // NOTE: coupon redemption (CouponRedemption row + counter bump) is NOT
+    // recorded here. The order is still PENDING (unpaid) — redeeming now would
+    // "consume" a coupon use for an order that may never be paid, and would
+    // double-count across payment retries. markOrderPaid() records it once, on
+    // the PENDING → CONFIRMED transition.
 
-    // Empty the cart and clear any applied coupon
-    await tx.cartItem.deleteMany({ where: { cartId: cartRead.id } });
-    await tx.cart.update({
-      where: { id: cartRead.id },
-      data: {
-        subtotalMinor: 0n,
-        totalMinor: 0n,
-        discountMinor: 0n,
-        couponCode: null,
-        version: { increment: 1 },
-      },
-    });
+    // NOTE: we deliberately do NOT empty the cart here. This order is still
+    // PENDING (unpaid) — clearing the cart now would wipe it the instant the
+    // customer cancels or closes the Razorpay modal. The cart is cleared only
+    // once payment actually succeeds, on the PENDING → CONFIRMED transition:
+    // the mock path (deleteCartRow in checkout-actions), the checkout-verify
+    // handshake, and the Razorpay webhook each clear it.
 
     return {
       orderId: order.id,
@@ -322,6 +334,200 @@ export async function createOrderFromCart(input: {
       maxWait: 5_000,
     },
   );
+}
+
+/** The Razorpay checkout payload stored on a PENDING order's payment intent. */
+export type RazorpayClientPayload = {
+  keyId: string;
+  razorpayOrderId: string;
+  amount: number;
+  currency: string;
+};
+
+export type OpenRazorpayOrder = {
+  orderId: string;
+  orderNumber: string;
+  totalMinor: bigint;
+  currency: string;
+  couponCode: string | null;
+  items: Array<{ variantId: string; quantity: number }>;
+  clientPayload: RazorpayClientPayload;
+};
+
+/**
+ * The customer's current "open" Razorpay checkout order, if any: a recent
+ * (< 15 min) PENDING order whose Razorpay intent is still awaiting payment.
+ * Used to reuse the same order + Razorpay handle on a payment retry instead of
+ * minting a duplicate order every time the customer reopens the pay modal.
+ */
+export async function findOpenRazorpayOrder(
+  customerId: string,
+): Promise<OpenRazorpayOrder | null> {
+  const cutoff = new Date(Date.now() - 15 * 60 * 1000);
+  const order = await prisma.order.findFirst({
+    where: {
+      customerId,
+      status: "PENDING",
+      createdAt: { gte: cutoff },
+      paymentIntents: {
+        some: { provider: "RAZORPAY", status: "REQUIRES_ACTION" },
+      },
+    },
+    orderBy: { createdAt: "desc" },
+    include: {
+      items: { select: { variantId: true, quantity: true } },
+      paymentIntents: {
+        where: { provider: "RAZORPAY", status: "REQUIRES_ACTION" },
+        orderBy: { createdAt: "desc" },
+        take: 1,
+      },
+    },
+  });
+  if (!order) return null;
+
+  const intent = order.paymentIntents[0];
+  const payload = intent?.clientPayload as RazorpayClientPayload | null;
+  if (!payload || !payload.razorpayOrderId) return null;
+
+  return {
+    orderId: order.id,
+    orderNumber: order.orderNumber,
+    totalMinor: order.totalMinor,
+    currency: order.currency,
+    couponCode: order.couponCode,
+    items: order.items.map((i) => ({ variantId: i.variantId, quantity: i.quantity })),
+    clientPayload: payload,
+  };
+}
+
+/**
+ * Cancel an open (PENDING) checkout order and release its inventory holds.
+ * Mirrors the release-reservations cron, but runs immediately when the cart
+ * has changed so we don't leave a stale order + double-held stock behind.
+ * No-op if the order isn't PENDING anymore (e.g. just got paid).
+ */
+export async function cancelCheckoutOrder(orderId: string): Promise<void> {
+  await prisma.$transaction(async (tx) => {
+    const order = await tx.order.findUnique({
+      where: { id: orderId },
+      select: { id: true, status: true },
+    });
+    if (!order || order.status !== "PENDING") return;
+
+    const reservations = await tx.inventoryReservation.findMany({
+      where: { orderId, releasedAt: null },
+    });
+    const now = new Date();
+    for (const r of reservations) {
+      const level = await tx.inventoryLevel.findUnique({
+        where: {
+          warehouseId_variantId: {
+            warehouseId: r.warehouseId,
+            variantId: r.variantId,
+          },
+        },
+      });
+      if (level && level.reserved > 0) {
+        await tx.inventoryLevel.update({
+          where: { id: level.id },
+          data: {
+            reserved: Math.max(0, level.reserved - r.quantity),
+            version: { increment: 1 },
+          },
+        });
+      }
+      await tx.inventoryReservation.update({
+        where: { id: r.id },
+        data: { releasedAt: now },
+      });
+    }
+
+    await tx.order.update({
+      where: { id: order.id },
+      data: { status: "CANCELLED", cancelledAt: now },
+    });
+    await tx.orderTimelineEvent.create({
+      data: {
+        orderId: order.id,
+        type: "order.cancelled",
+        message: "Superseded by a new checkout (cart changed)",
+        actorKind: "SYSTEM",
+      },
+    });
+    await tx.paymentIntent.updateMany({
+      where: { orderId: order.id, status: { in: ["REQUIRES_ACTION", "PROCESSING"] } },
+      data: { status: "FAILED" },
+    });
+  });
+}
+
+/**
+ * Mark an order paid: the single source of truth for the PENDING → CONFIRMED
+ * transition. Idempotent (atomic claim via updateMany), so the mock path, the
+ * checkout-verify handshake, and the Razorpay webhook can all call it safely
+ * — only the first caller does the work. Records the coupon redemption once
+ * and clears the customer's cart.
+ *
+ * Payment-record writes (PaymentIntent / PaymentTransaction) stay with each
+ * caller; this owns only the order-level effects.
+ */
+export async function markOrderPaid(input: {
+  orderId: string;
+  actor?: { kind: "CUSTOMER" | "ADMIN" | "SYSTEM"; id?: string };
+  message?: string;
+}): Promise<{ confirmed: boolean }> {
+  return prisma.$transaction(async (tx) => {
+    const order = await tx.order.findUnique({
+      where: { id: input.orderId },
+      select: { id: true, customerId: true, couponCode: true },
+    });
+    if (!order) throw new Error("Order not found");
+
+    // Atomically claim the transition. Only one concurrent caller gets count 1.
+    const claim = await tx.order.updateMany({
+      where: { id: order.id, status: "PENDING" },
+      data: { status: "CONFIRMED" },
+    });
+    if (claim.count === 0) return { confirmed: false };
+
+    await tx.orderTimelineEvent.create({
+      data: {
+        orderId: order.id,
+        type: "payment.captured",
+        message: input.message ?? "Payment captured",
+        actorKind: input.actor?.kind ?? "SYSTEM",
+        actorId: input.actor?.id ?? null,
+      },
+    });
+
+    // Record the coupon redemption now that the order is actually paid. The
+    // claim above guarantees this runs once per order, so the unique
+    // (couponId, orderId) constraint is never tripped.
+    if (order.couponCode) {
+      const coupon = await tx.coupon.findUnique({
+        where: { code: order.couponCode },
+        select: { id: true },
+      });
+      if (coupon) {
+        await tx.couponRedemption.create({
+          data: {
+            couponId: coupon.id,
+            customerId: order.customerId,
+            orderId: order.id,
+          },
+        });
+        await tx.coupon.update({
+          where: { id: coupon.id },
+          data: { redemptionsCount: { increment: 1 } },
+        });
+      }
+    }
+
+    // Payment succeeded — clear the cart (was intentionally kept until now).
+    await tx.cart.deleteMany({ where: { customerId: order.customerId } });
+
+    return { confirmed: true };
+  });
 }
 
 export async function listOrdersForCustomer(

@@ -32,6 +32,7 @@ type Defaults = {
   minSubtotalPaise: number | null;
   maxRedemptions: number | null;
   perCustomerLimit: number | null;
+  firstOrderOnly: boolean;
   validFrom: string | null;
   validTo: string | null;
   active: boolean;
@@ -48,6 +49,7 @@ const EMPTY: Defaults = {
   minSubtotalPaise: null,
   maxRedemptions: null,
   perCustomerLimit: null,
+  firstOrderOnly: false,
   validFrom: null,
   validTo: null,
   active: true,
@@ -150,6 +152,7 @@ export function CouponForm({ state }: { state: Mode }) {
               defaultValue={defaults.maxRedemptions ?? ""}
               placeholder="Unlimited"
             />
+            <FieldHint hint="Across all customers. Set to 1 for a single-use code." />
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="perCustomerLimit">Max uses per customer</Label>
@@ -161,7 +164,23 @@ export function CouponForm({ state }: { state: Mode }) {
               defaultValue={defaults.perCustomerLimit ?? ""}
               placeholder="Unlimited"
             />
+            <FieldHint hint="Set to 1 so each customer can use it only once." />
           </div>
+        </div>
+
+        <div className="flex items-center gap-3 rounded-md border p-3">
+          <Switch
+            id="firstOrderOnly"
+            name="firstOrderOnly"
+            defaultChecked={defaults.firstOrderOnly}
+          />
+          <Label htmlFor="firstOrderOnly" className="cursor-pointer">
+            First-time customers only
+            <span className="block text-xs font-normal text-muted-foreground">
+              Only customers with no prior paid order can redeem this. Requires
+              the shopper to be signed in.
+            </span>
+          </Label>
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">

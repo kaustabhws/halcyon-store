@@ -4,9 +4,24 @@ import {
   applyCoupon,
   validateCoupon,
   normalizeCode,
+  couponRowToInput,
   type CouponInput,
   type CouponValidation,
 } from "@ecom/shared/coupons";
+
+/**
+ * Order statuses that count as a real, paid purchase — used to decide whether
+ * a customer is "new" for firstOrderOnly coupons. PENDING/FAILED/CANCELLED are
+ * excluded (never actually paid).
+ */
+const PAID_ORDER_STATUSES = [
+  "CONFIRMED",
+  "PROCESSING",
+  "SHIPPED",
+  "DELIVERED",
+  "RETURNED",
+  "REFUNDED",
+] as const;
 
 const cartInclude = {
   items: {
@@ -385,6 +400,7 @@ async function recomputeTotals(
       couponCode: true,
       shippingMinor: true,
       currency: true,
+      customerId: true,
     },
   });
   const items = await tx.cartItem.findMany({ where: { cartId } });
@@ -402,7 +418,25 @@ async function recomputeTotals(
       where: { code: cart.couponCode },
     });
     if (couponRow && couponRow.deletedAt == null) {
-      const input = couponRowToInput(couponRow);
+      let customerRedemptionCount: number | undefined = undefined;
+      let customerHasPriorPaidOrder: boolean | undefined = undefined;
+      if (cart.customerId) {
+        const [redemptions, priorPaid] = await Promise.all([
+          tx.couponRedemption.count({
+            where: { couponId: couponRow.id, customerId: cart.customerId },
+          }),
+          tx.order.count({
+            where: { customerId: cart.customerId, status: { in: [...PAID_ORDER_STATUSES] } },
+          }),
+        ]);
+        customerRedemptionCount = redemptions;
+        customerHasPriorPaidOrder = priorPaid > 0;
+      }
+      const input: CouponInput = {
+        ...couponRowToInput(couponRow),
+        customerRedemptionCount,
+        customerHasPriorPaidOrder,
+      };
       const validation = validateCoupon(input, {
         subtotalMinor: subtotal,
         shippingMinor: cart.shippingMinor,
@@ -443,36 +477,6 @@ async function recomputeTotals(
   });
 }
 
-function couponRowToInput(row: {
-  id: string;
-  code: string;
-  type: "PERCENT" | "FIXED" | "FREE_SHIPPING";
-  value: number;
-  currency: string | null;
-  active: boolean;
-  validFrom: Date | null;
-  validTo: Date | null;
-  minSubtotalMinor: bigint | null;
-  maxRedemptions: number | null;
-  redemptionsCount: number;
-  perCustomerLimit: number | null;
-}): CouponInput {
-  return {
-    id: row.id,
-    code: row.code,
-    type: row.type,
-    value: row.value,
-    currency: row.currency,
-    active: row.active,
-    validFrom: row.validFrom,
-    validTo: row.validTo,
-    minSubtotalMinor: row.minSubtotalMinor,
-    maxRedemptions: row.maxRedemptions,
-    redemptionsCount: row.redemptionsCount,
-    perCustomerLimit: row.perCustomerLimit,
-  };
-}
-
 /**
  * Try to apply a coupon code to the cart. Returns a friendly validation
  * result for the UI to show; does not throw on invalid codes.
@@ -503,17 +507,27 @@ export async function applyCartCoupon(input: {
     return { ok: false, error: "That code isn't recognised" };
   }
 
-  // Compute per-customer redemptions if we have a customer.
+  // Customer-specific facts the validator needs. Left undefined for anonymous
+  // carts so firstOrderOnly coupons correctly reject (eligibility unknown).
   let customerRedemptionCount = 0;
+  let customerHasPriorPaidOrder: boolean | undefined = undefined;
   if (input.customerId) {
-    customerRedemptionCount = await prisma.couponRedemption.count({
-      where: { couponId: couponRow.id, customerId: input.customerId },
-    });
+    const [redemptions, priorPaid] = await Promise.all([
+      prisma.couponRedemption.count({
+        where: { couponId: couponRow.id, customerId: input.customerId },
+      }),
+      prisma.order.count({
+        where: { customerId: input.customerId, status: { in: [...PAID_ORDER_STATUSES] } },
+      }),
+    ]);
+    customerRedemptionCount = redemptions;
+    customerHasPriorPaidOrder = priorPaid > 0;
   }
 
   const couponInput: CouponInput = {
     ...couponRowToInput(couponRow),
     customerRedemptionCount,
+    customerHasPriorPaidOrder,
   };
 
   const validation: CouponValidation = validateCoupon(couponInput, {

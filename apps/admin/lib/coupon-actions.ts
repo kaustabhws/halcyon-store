@@ -25,6 +25,9 @@ const CouponBase = z.object({
   minSubtotalPaise: z.coerce.number().int().min(0).optional().or(z.literal("")),
   maxRedemptions: z.coerce.number().int().min(1).optional().or(z.literal("")),
   perCustomerLimit: z.coerce.number().int().min(1).optional().or(z.literal("")),
+  firstOrderOnly: z
+    .union([z.literal("on"), z.literal("true"), z.literal("")])
+    .optional(),
   validFrom: z.string().optional().or(z.literal("")),
   validTo: z.string().optional().or(z.literal("")),
   active: z
@@ -113,6 +116,7 @@ export async function createCouponAction(
         typeof data.perCustomerLimit === "number"
           ? data.perCustomerLimit
           : null,
+      firstOrderOnly: data.firstOrderOnly === "on" || data.firstOrderOnly === "true",
       validFrom,
       validTo,
       active: data.active === "on" || data.active === "true",
@@ -188,6 +192,7 @@ export async function updateCouponAction(
         typeof data.perCustomerLimit === "number"
           ? data.perCustomerLimit
           : null,
+      firstOrderOnly: data.firstOrderOnly === "on" || data.firstOrderOnly === "true",
       validFrom,
       validTo,
       active: data.active === "on" || data.active === "true",

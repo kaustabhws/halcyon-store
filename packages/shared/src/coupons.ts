@@ -19,8 +19,16 @@ export interface CouponInput {
   maxRedemptions: number | null;
   redemptionsCount: number;
   perCustomerLimit: number | null;
+  /** Restrict to customers who have never placed a paid order. */
+  firstOrderOnly: boolean;
   /** how many times THIS customer has redeemed it before, if known */
   customerRedemptionCount?: number;
+  /**
+   * Whether THIS customer already has a prior paid order. `undefined` means we
+   * couldn't determine it (anonymous / not signed in) — a firstOrderOnly coupon
+   * is rejected in that case since eligibility can't be verified.
+   */
+  customerHasPriorPaidOrder?: boolean;
 }
 
 export interface CouponContext {
@@ -41,7 +49,9 @@ export type CouponInvalidReason =
   | "min_subtotal"
   | "currency_mismatch"
   | "max_redemptions"
-  | "per_customer_limit";
+  | "per_customer_limit"
+  | "new_customers_only"
+  | "requires_account";
 
 export function validateCoupon(
   coupon: CouponInput,
@@ -100,7 +110,60 @@ export function validateCoupon(
       message: "You've already used this code",
     };
   }
+  if (coupon.firstOrderOnly) {
+    if (coupon.customerHasPriorPaidOrder === undefined) {
+      return {
+        ok: false,
+        code: "requires_account",
+        message: "Sign in to use this first-order code",
+      };
+    }
+    if (coupon.customerHasPriorPaidOrder) {
+      return {
+        ok: false,
+        code: "new_customers_only",
+        message: "This code is for your first order only",
+      };
+    }
+  }
   return { ok: true };
+}
+
+/**
+ * Map a Coupon DB row (structurally typed — no Prisma dependency) into the
+ * pure CouponInput the validator/discount math consume. Shared by the cart
+ * and order repositories so the two never drift.
+ */
+export function couponRowToInput(row: {
+  id: string;
+  code: string;
+  type: CouponType;
+  value: number;
+  currency: string | null;
+  active: boolean;
+  validFrom: Date | null;
+  validTo: Date | null;
+  minSubtotalMinor: bigint | null;
+  maxRedemptions: number | null;
+  redemptionsCount: number;
+  perCustomerLimit: number | null;
+  firstOrderOnly: boolean;
+}): CouponInput {
+  return {
+    id: row.id,
+    code: row.code,
+    type: row.type,
+    value: row.value,
+    currency: row.currency,
+    active: row.active,
+    validFrom: row.validFrom,
+    validTo: row.validTo,
+    minSubtotalMinor: row.minSubtotalMinor,
+    maxRedemptions: row.maxRedemptions,
+    redemptionsCount: row.redemptionsCount,
+    perCustomerLimit: row.perCustomerLimit,
+    firstOrderOnly: row.firstOrderOnly,
+  };
 }
 
 export interface DiscountResult {

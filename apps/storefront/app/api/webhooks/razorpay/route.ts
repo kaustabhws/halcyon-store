@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { prisma } from "@/lib/db";
+import { prisma, orderRepo } from "@/lib/db";
 import { getRazorpay, razorpayConfigured } from "@/lib/payments";
 
 export const dynamic = "force-dynamic";
@@ -180,22 +180,18 @@ async function handlePayment(type: string, p: PaymentEntity): Promise<void> {
       where: { id: intent.id },
       data: { status: type === "payment.captured" ? "CAPTURED" : "AUTHORIZED" },
     });
-
-    if (type === "payment.captured") {
-      await tx.order.update({
-        where: { id: intent.orderId },
-        data: { status: "CONFIRMED" },
-      });
-      await tx.orderTimelineEvent.create({
-        data: {
-          orderId: intent.orderId,
-          type: "payment.captured",
-          message: "Payment captured (webhook)",
-          actorKind: "SYSTEM",
-        },
-      });
-    }
   });
+
+  // Confirm on capture. markOrderPaid is idempotent and the single owner of
+  // the status transition + coupon redemption + cart clear — so this is the
+  // backstop for when the browser never completes the verify handshake.
+  if (type === "payment.captured") {
+    await orderRepo.markOrderPaid({
+      orderId: intent.orderId,
+      actor: { kind: "SYSTEM" },
+      message: "Payment captured (webhook)",
+    });
+  }
 }
 
 async function handlePaymentFailed(p: PaymentEntity): Promise<void> {

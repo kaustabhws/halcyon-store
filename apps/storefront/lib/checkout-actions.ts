@@ -100,21 +100,27 @@ async function saveAddressAndPhoneToProfile(
   });
 }
 
+type ItemKey = { variantId: string; quantity: number };
+
 /**
- * Best-effort post-order cleanup of the now-empty Cart row. createOrderFromCart
- * deletes the cart items and zeros totals, but keeps the parent Cart row so
- * subsequent requests can re-use it. We delete it here so each order gets a
- * fresh cart row next time, reducing stale-data surface.
- *
- * Failures are swallowed — the order has already been placed, and a stale
- * empty cart row never breaks anything.
+ * True when an existing open Razorpay order still represents the current cart
+ * exactly — same line items (variant + qty), same total, same coupon. If
+ * anything differs we must mint a fresh order so the Razorpay amount matches.
  */
-async function deleteCartRow(cartId: string): Promise<void> {
-  try {
-    await prisma.cart.delete({ where: { id: cartId } });
-  } catch {
-    // ignore — usually means it's already been deleted via FK cascade
-  }
+function cartMatchesOpenOrder(
+  cart: { totalMinor: bigint; couponCode: string | null; items: ItemKey[] },
+  open: { totalMinor: bigint; couponCode: string | null; items: ItemKey[] },
+): boolean {
+  if (cart.totalMinor !== open.totalMinor) return false;
+  if ((cart.couponCode ?? null) !== (open.couponCode ?? null)) return false;
+  if (cart.items.length !== open.items.length) return false;
+  const norm = (xs: ItemKey[]) =>
+    [...xs].sort((a, b) => a.variantId.localeCompare(b.variantId));
+  const a = norm(cart.items);
+  const b = norm(open.items);
+  return a.every(
+    (x, i) => x.variantId === b[i]!.variantId && x.quantity === b[i]!.quantity,
+  );
 }
 
 /**
@@ -147,6 +153,44 @@ export async function placeOrderAction(formData: FormData): Promise<PlaceOrderRe
   const cart = await getCart();
   if (!cart || cart.items.length === 0) throw new Error("Cart is empty");
 
+  // Save to address book + mirror phone to profile BEFORE placing the order
+  // so a downstream order failure doesn't lose the customer's typing. Best
+  // effort — never block checkout on profile-write errors.
+  try {
+    await saveAddressAndPhoneToProfile(customerId, parsed.data);
+  } catch {
+    // ignore — order placement is the user-visible success path
+  }
+
+  // Razorpay retry reuse: if the customer already has an open Razorpay order
+  // for this exact cart (e.g. they closed the pay modal and clicked again),
+  // reopen it instead of minting a duplicate order. If the cart changed since,
+  // abandon that stale order (releasing its stock hold) before placing a fresh
+  // one.
+  if (razorpayConfigured()) {
+    const open = await orderRepo.findOpenRazorpayOrder(customerId);
+    if (open) {
+      if (cartMatchesOpenOrder(cart, open)) {
+        const customer = await prisma.customer.findUniqueOrThrow({
+          where: { id: customerId },
+          select: { email: true, firstName: true, lastName: true },
+        });
+        return {
+          ok: true,
+          mode: "razorpay",
+          orderId: open.orderId,
+          orderNumber: open.orderNumber,
+          payment: open.clientPayload,
+          customerName:
+            [customer.firstName, customer.lastName].filter(Boolean).join(" ") ||
+            customer.email,
+          customerEmail: customer.email,
+        };
+      }
+      await orderRepo.cancelCheckoutOrder(open.orderId);
+    }
+  }
+
   const platformVendor = await prisma.vendor.findUniqueOrThrow({ where: { slug: "platform" } });
 
   const shippingAddress: AddressSnapshot = {
@@ -160,15 +204,6 @@ export async function placeOrderAction(formData: FormData): Promise<PlaceOrderRe
     country: "IN",
   };
 
-  // Save to address book + mirror phone to profile BEFORE placing the order
-  // so a downstream order failure doesn't lose the customer's typing. Best
-  // effort — never block checkout on profile-write errors.
-  try {
-    await saveAddressAndPhoneToProfile(customerId, parsed.data);
-  } catch {
-    // ignore — order placement is the user-visible success path
-  }
-
   const { orderId, orderNumber, totalMinor, currency } = await orderRepo.createOrderFromCart({
     cartId: cart.id,
     customerId,
@@ -178,8 +213,8 @@ export async function placeOrderAction(formData: FormData): Promise<PlaceOrderRe
 
   // Mock path — no Razorpay configured
   if (!razorpayConfigured()) {
+    // Write a synthetic captured payment so admin shows it...
     await prisma.$transaction(async (tx) => {
-      // Mark CONFIRMED + write a synthetic payment transaction so admin shows it.
       await tx.paymentIntent.create({
         data: {
           orderId,
@@ -202,21 +237,15 @@ export async function placeOrderAction(formData: FormData): Promise<PlaceOrderRe
           capturedAt: new Date(),
         },
       });
-      await tx.order.update({
-        where: { id: orderId },
-        data: { status: "CONFIRMED" },
-      });
-      await tx.orderTimelineEvent.create({
-        data: {
-          orderId,
-          type: "payment.captured",
-          message: "Payment captured (mock)",
-        },
-      });
+    });
+    // ...then confirm: status transition + coupon redemption + cart clear.
+    await orderRepo.markOrderPaid({
+      orderId,
+      actor: { kind: "CUSTOMER", id: customerId },
+      message: "Payment captured (mock)",
     });
     revalidatePath("/account/orders");
     await sendOrderConfirmationEmail(orderId);
-    await deleteCartRow(cart.id);
     return { ok: true, mode: "mock", orderId, orderNumber };
   }
 

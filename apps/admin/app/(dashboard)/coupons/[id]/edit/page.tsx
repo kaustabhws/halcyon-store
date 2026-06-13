@@ -51,6 +51,7 @@ export default async function EditCouponPage({
               c.minSubtotalMinor != null ? Number(c.minSubtotalMinor) : null,
             maxRedemptions: c.maxRedemptions ?? null,
             perCustomerLimit: c.perCustomerLimit ?? null,
+            firstOrderOnly: c.firstOrderOnly,
             validFrom: toLocalInput(c.validFrom),
             validTo: toLocalInput(c.validTo),
             active: c.active,

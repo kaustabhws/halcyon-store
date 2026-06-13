@@ -1,12 +1,10 @@
 import Link from "next/link";
-import Image from "next/image";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { getCart } from "@/lib/cart-cookie";
 import { prisma } from "@/lib/db";
-import { formatPrice } from "@/lib/format";
-import { Separator } from "@/components/ui/separator";
 import { CheckoutForm } from "@/components/checkout/checkout-form";
+import { CheckoutSummary } from "@/components/checkout/checkout-summary";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Checkout" };
@@ -53,72 +51,8 @@ export default async function CheckoutPage() {
           }
         />
 
-        <aside className="h-fit space-y-6 rounded-2xl border border-zinc-200 bg-background p-6 dark:border-zinc-900">
-          <h2 className="text-lg font-semibold tracking-tight">Order summary</h2>
-          <ul className="space-y-4">
-            {cart.items.map((item) => (
-              <li key={item.id} className="flex gap-3">
-                <div className="relative aspect-square w-16 shrink-0 overflow-hidden rounded-lg bg-zinc-100 dark:bg-zinc-900">
-                  {item.imageUrl ? (
-                    <Image
-                      src={item.imageUrl}
-                      alt={item.productName}
-                      fill
-                      sizes="64px"
-                      className="object-cover"
-                    />
-                  ) : null}
-                </div>
-                <div className="flex-1 text-sm">
-                  <p className="font-medium leading-snug">{item.productName}</p>
-                  {item.attributes.length > 0 ? (
-                    <p className="text-xs text-zinc-500">
-                      {item.attributes.map((a) => a.valueLabel).join(" / ")}
-                    </p>
-                  ) : item.variantName ? (
-                    <p className="text-xs text-zinc-500">{item.variantName}</p>
-                  ) : null}
-                  <p className="mt-0.5 text-xs text-zinc-500">Qty {item.quantity}</p>
-                </div>
-                <p className="self-start text-sm font-semibold">
-                  {formatPrice(item.lineTotalMinor, item.currency)}
-                </p>
-              </li>
-            ))}
-          </ul>
-
-          <Separator />
-
-          <dl className="space-y-2 text-sm">
-            <Row label="Subtotal" value={formatPrice(cart.subtotalMinor, cart.currency)} />
-            <Row label="Shipping" value="Free" subtle />
-          </dl>
-          <Separator />
-          <div className="flex items-baseline justify-between">
-            <span className="text-base font-semibold">Total</span>
-            <span className="text-xl font-semibold">
-              {formatPrice(cart.totalMinor, cart.currency)}
-            </span>
-          </div>
-        </aside>
+        <CheckoutSummary />
       </div>
-    </div>
-  );
-}
-
-function Row({
-  label,
-  value,
-  subtle,
-}: {
-  label: string;
-  value: string;
-  subtle?: boolean;
-}) {
-  return (
-    <div className="flex items-baseline justify-between">
-      <dt className="text-zinc-500">{label}</dt>
-      <dd className={subtle ? "text-zinc-500" : ""}>{value}</dd>
     </div>
   );
 }

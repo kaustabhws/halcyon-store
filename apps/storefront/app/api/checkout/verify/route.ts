@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { auth } from "@/lib/auth";
-import { prisma } from "@/lib/db";
+import { prisma, orderRepo } from "@/lib/db";
 import { sendOrderConfirmationEmail } from "@/lib/emails";
 import { verifyRazorpayCheckoutSignature } from "@ecom/payments/razorpay";
 
@@ -80,34 +80,19 @@ export async function POST(req: Request) {
         capturedAt: new Date(),
       },
     });
+  });
 
-    if (order.status === "PENDING") {
-      await tx.order.update({
-        where: { id: order.id },
-        data: { status: "CONFIRMED" },
-      });
-      await tx.orderTimelineEvent.create({
-        data: {
-          orderId: order.id,
-          type: "payment.captured",
-          message: "Payment captured via checkout handshake",
-          actorKind: "CUSTOMER",
-          actorId: session.user.id,
-        },
-      });
-    }
+  // Confirm the order: idempotent PENDING → CONFIRMED, coupon redemption, and
+  // cart clear all happen here (and only here, on the first caller to win).
+  await orderRepo.markOrderPaid({
+    orderId: order.id,
+    actor: { kind: "CUSTOMER", id: session.user.id },
+    message: "Payment captured via checkout handshake",
   });
 
   // Send the confirmation email after the transaction commits. Fire-and-
   // forget so a mail provider hiccup never blocks payment acknowledgement.
   void sendOrderConfirmationEmail(order.id);
-
-  // Order is paid; the customer's cart row (already empty of items inside
-  // createOrderFromCart) is no longer useful. Best-effort delete so cleanup
-  // matches the mock-payment path.
-  await prisma.cart
-    .deleteMany({ where: { customerId: session.user.id } })
-    .catch(() => undefined);
 
   return NextResponse.json({ ok: true });
 }
