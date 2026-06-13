@@ -78,6 +78,12 @@ export const authConfig = {
             },
           });
 
+      // Welcome a brand-new customer exactly once (first OAuth login).
+      if (!existing) {
+        const { sendWelcomeEmail } = await import("@/lib/emails");
+        await sendWelcomeEmail(customer.id);
+      }
+
       if (account) {
         await prisma.oAuthAccount.upsert({
           where: {

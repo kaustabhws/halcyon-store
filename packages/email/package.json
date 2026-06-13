@@ -7,7 +7,7 @@
   "types": "./src/index.ts",
   "exports": {
     ".": "./src/index.ts",
-    "./resend": "./src/resend.ts",
+    "./nodemailer": "./src/nodemailer.ts",
     "./templates": "./src/templates.ts",
     "./registry": "./src/registry.ts"
   },
@@ -18,10 +18,11 @@
   },
   "dependencies": {
     "@ecom/shared": "*",
-    "resend": "^4.0.0"
+    "nodemailer": "^6.9.16"
   },
   "devDependencies": {
     "@ecom/tsconfig": "*",
+    "@types/nodemailer": "^6.4.17",
     "typescript": "^5"
   }
 }

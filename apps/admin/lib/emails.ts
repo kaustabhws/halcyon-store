@@ -6,7 +6,23 @@ import { formatPrice } from "@/lib/format";
 const PUBLIC_ORIGIN =
   process.env.STOREFRONT_URL ?? "http://localhost:3000";
 
-const STATUS_MESSAGES: Record<string, { template: "order.shipped" | "order.delivered" | "order.cancelled" | null; message: (orderNumber: string) => string }> = {
+const STATUS_MESSAGES: Record<
+  string,
+  {
+    template:
+      | "order.processing"
+      | "order.shipped"
+      | "order.delivered"
+      | "order.cancelled"
+      | null;
+    message: (orderNumber: string) => string;
+  }
+> = {
+  PROCESSING: {
+    template: "order.processing",
+    message: (n) =>
+      `Good news — order ${n} is being packed and prepared for dispatch. We'll email you the moment it ships.`,
+  },
   SHIPPED: {
     template: "order.shipped",
     message: (n) => `Your order ${n} just shipped. We'll send tracking info as soon as the carrier scans it.`,
@@ -20,7 +36,6 @@ const STATUS_MESSAGES: Record<string, { template: "order.shipped" | "order.deliv
     message: (n) => `Your order ${n} was cancelled. If anything was charged, it'll be refunded automatically.`,
   },
   CONFIRMED: { template: null, message: () => "" },
-  PROCESSING: { template: null, message: () => "" },
   PENDING: { template: null, message: () => "" },
   RETURNED: { template: null, message: () => "" },
   REFUNDED: { template: null, message: () => "" },

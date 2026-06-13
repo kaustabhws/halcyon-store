@@ -106,6 +106,12 @@ export async function signupAction(
 
   await mergeAnonymousCart(customer.id);
 
+  // Welcome brand-new accounts only (not an OAuth user adding a password).
+  if (!existing) {
+    const { sendWelcomeEmail } = await import("@/lib/emails");
+    await sendWelcomeEmail(customer.id);
+  }
+
   const redirectTo = safeNext(parsed.data.next, "/account");
 
   // Sign the user in immediately. NextAuth throws a redirect-as-error on

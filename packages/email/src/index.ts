@@ -1,5 +1,6 @@
 export type EmailTemplate =
   | "order.confirmed"
+  | "order.processing"
   | "order.shipped"
   | "order.delivered"
   | "order.cancelled"
