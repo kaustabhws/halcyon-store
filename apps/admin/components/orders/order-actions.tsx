@@ -4,6 +4,17 @@ import * as React from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { refundOrderAction, updateOrderStatusAction } from "@/lib/order-actions";
 
 const STATUSES = [
@@ -43,7 +54,6 @@ export function OrderActions({
   }
 
   function refund() {
-    if (!confirm("Issue a full refund for this order?")) return;
     startTransition(async () => {
       const fd = new FormData();
       fd.set("orderId", orderId);
@@ -72,15 +82,33 @@ export function OrderActions({
         </Button>
       ))}
       {refundable ? (
-        <Button
-          type="button"
-          variant="destructive"
-          size="sm"
-          disabled={pending}
-          onClick={refund}
-        >
-          Refund
-        </Button>
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button type="button" variant="destructive" size="sm" disabled={pending}>
+              Refund
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Issue a full refund?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This refunds the full order amount to the customer&rsquo;s original
+                payment method and marks the order as refunded. This can&rsquo;t be
+                undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel disabled={pending}>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={refund}
+                disabled={pending}
+                className="bg-destructive text-white hover:bg-destructive/90"
+              >
+                {pending ? "Refunding…" : "Issue refund"}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       ) : null}
     </div>
   );

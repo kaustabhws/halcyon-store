@@ -127,7 +127,7 @@ export default async function OrderDetailPage({
             {order.timeline.map((ev, i) => (
               <li key={i} className="relative">
                 <span className="absolute -left-[1.875rem] top-1.5 grid h-3 w-3 place-items-center rounded-full bg-foreground" />
-                <p className="text-sm font-medium">{ev.message ?? ev.type}</p>
+                <p className="text-sm font-medium">{timelineLabel(ev.type)}</p>
                 <p className="text-xs text-zinc-500">
                   {new Date(ev.createdAt).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" })}
                 </p>
@@ -140,8 +140,35 @@ export default async function OrderDetailPage({
   );
 }
 
-function Row({ label, value }: { label: string; value: string }) {
-  return (
+/**
+ * Customer-facing label for an order timeline event. Derived from the event
+ * `type` so we never surface internal stored messages (which include the
+ * admin's email and read robotically, e.g. "Status set to SHIPPED by ...").
+ */
+function timelineLabel(type: string): string {
+  const LABELS: Record<string, string> = {
+    "order.created": "Order placed",
+    "payment.captured": "Payment confirmed",
+    "payment.failed": "Payment failed",
+    "order.cancelled": "Order cancelled",
+    "order.status.pending": "Order pending",
+    "order.status.confirmed": "Order confirmed",
+    "order.status.processing": "Order is being prepared",
+    "order.status.shipped": "Order shipped",
+    "order.status.delivered": "Order delivered",
+    "order.status.cancelled": "Order cancelled",
+    "order.status.returned": "Order returned",
+    "order.status.refunded": "Refund issued",
+    "order.status.failed": "Order failed",
+  };
+  if (LABELS[type]) return LABELS[type];
+  // Fallback: turn "order.status.foo_bar" into "Foo bar".
+  const last = type.split(".").pop() ?? type;
+  const words = last.replace(/_/g, " ");
+  return words.charAt(0).toUpperCase() + words.slice(1);
+}
+
+function Row({ label, value }: { label: string; value: string }) {  return (
     <div className="flex items-baseline justify-between">
       <dt className="text-zinc-500">{label}</dt>
       <dd>{value}</dd>
