@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextResponse, after } from "next/server";
 import { z } from "zod";
 import { auth } from "@/lib/auth";
 import { prisma, orderRepo } from "@/lib/db";
@@ -90,9 +90,11 @@ export async function POST(req: Request) {
     message: "Payment captured via checkout handshake",
   });
 
-  // Send the confirmation email after the transaction commits. Fire-and-
-  // forget so a mail provider hiccup never blocks payment acknowledgement.
-  void sendOrderConfirmationEmail(order.id);
+  // Send the confirmation email after the response is returned. after() keeps
+  // the serverless function alive to finish the send — a plain fire-and-forget
+  // (`void`) promise is killed on Vercel the moment we respond, so it would
+  // silently never run in production.
+  after(() => sendOrderConfirmationEmail(order.id));
 
   return NextResponse.json({ ok: true });
 }

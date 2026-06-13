@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { requireAdmin, requirePermission } from "@/lib/admin-auth";
@@ -183,7 +184,7 @@ export async function refundOrderAction(formData: FormData): Promise<ActionResul
     });
   });
 
-  void sendRefundEmail(order.id);
+  after(() => sendRefundEmail(order.id));
 
   revalidatePath(`/orders/${order.id}`);
   revalidatePath(`/orders`);
@@ -235,7 +236,7 @@ export async function updateOrderStatusAction(formData: FormData): Promise<Actio
     });
   });
 
-  void sendOrderStatusEmail(order.id, parsed.data.status);
+  after(() => sendOrderStatusEmail(order.id, parsed.data.status));
 
   revalidatePath(`/orders/${order.id}`);
   revalidatePath(`/orders`);
