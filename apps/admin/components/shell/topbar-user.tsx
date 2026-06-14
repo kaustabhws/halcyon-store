@@ -3,6 +3,7 @@
 import * as React from "react";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { LogOut, ExternalLink } from "lucide-react";
+import { useClerk } from "@clerk/nextjs";
 
 export function TopbarUser({
   user,
@@ -13,6 +14,7 @@ export function TopbarUser({
   isMock: boolean;
   storefrontUrl: string;
 }) {
+  const { signOut } = useClerk();
   const initials = (user.fullName ?? user.email).slice(0, 2).toUpperCase();
 
   return (
@@ -59,13 +61,14 @@ export function TopbarUser({
             </div>
           ) : (
             <DropdownMenu.Item asChild>
-              <a
-                href="/sign-out"
-                className="flex items-center gap-2 rounded-md px-3 py-2 text-sm text-rose-600 outline-none data-[highlighted]:bg-rose-500/10"
+              <button
+                type="button"
+                onClick={() => signOut({ redirectUrl: "/sign-in" })}
+                className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm text-rose-600 outline-none data-[highlighted]:bg-rose-500/10"
               >
                 <LogOut className="h-4 w-4" />
                 <span>Sign out</span>
-              </a>
+              </button>
             </DropdownMenu.Item>
           )}
         </DropdownMenu.Content>

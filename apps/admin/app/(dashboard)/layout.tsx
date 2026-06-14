@@ -1,6 +1,12 @@
+import { redirect } from "next/navigation";
 import { AdminSidebar } from "@/components/shell/sidebar";
 import { AdminTopbar } from "@/components/shell/topbar";
-import { requireAdmin, isMockAdminEnabled } from "@/lib/admin-auth";
+import {
+  requireAdmin,
+  isMockAdminEnabled,
+  NotAuthorizedError,
+  type AdminContext,
+} from "@/lib/admin-auth";
 
 export const dynamic = "force-dynamic";
 
@@ -9,7 +15,15 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const admin = await requireAdmin();
+  let admin: AdminContext;
+  try {
+    admin = await requireAdmin();
+  } catch (e) {
+    // Authenticated but not an authorized admin → dedicated page (with a
+    // sign-out). Not authenticated at all → Clerk sign-in.
+    if (e instanceof NotAuthorizedError) redirect("/not-authorized");
+    redirect("/sign-in");
+  }
 
   return (
     <div className="flex h-screen overflow-hidden">

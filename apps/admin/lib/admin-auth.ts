@@ -6,6 +6,31 @@ const CLERK_CONFIGURED = Boolean(
   process.env.CLERK_SECRET_KEY && process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
 );
 
+/**
+ * Allowlist of emails permitted into the admin panel. A valid Clerk session is
+ * NOT sufficient — Clerk sign-up is open, so we must independently verify the
+ * person is an authorized admin. Comma/space/newline separated, case-insensitive.
+ */
+const ADMIN_ALLOWED_EMAILS = new Set(
+  (process.env.ADMIN_ALLOWED_EMAILS ?? "")
+    .split(/[\s,]+/)
+    .map((e) => e.trim().toLowerCase())
+    .filter(Boolean),
+);
+
+/** Thrown when an authenticated Clerk user is not an authorized admin. */
+export class NotAuthorizedError extends Error {
+  constructor(message = "Not authorized") {
+    super(message);
+    this.name = "NotAuthorizedError";
+  }
+}
+
+function isEmailAllowed(email: string | null | undefined): boolean {
+  if (!email) return false;
+  return ADMIN_ALLOWED_EMAILS.has(email.toLowerCase());
+}
+
 export type AdminContext = {
   adminId: string;
   email: string;
@@ -40,9 +65,17 @@ export async function requireAdmin(): Promise<AdminContext> {
   });
 
   if (!admin) {
+    // No Admin row yet. A Clerk session alone does NOT grant access — sign-up
+    // is open, so we only provision an admin when their email is explicitly
+    // allowlisted. Everyone else is rejected.
     const user = await currentUser();
     const email = user?.emailAddresses[0]?.emailAddress;
-    if (!email) throw new Error("Admin has no email on Clerk profile");
+    if (!email) throw new NotAuthorizedError("Admin has no email on Clerk profile");
+    if (!isEmailAllowed(email)) {
+      throw new NotAuthorizedError(
+        "This account is not authorized for the admin panel.",
+      );
+    }
     admin = await prisma.admin.create({
       data: {
         clerkUserId: userId,
@@ -59,6 +92,18 @@ export async function requireAdmin(): Promise<AdminContext> {
         },
       },
     });
+  } else {
+    // Existing admin: re-check on every request so revoking access is as simple
+    // as removing the email from the allowlist or suspending the row. An admin
+    // that pre-dates the allowlist but isn't on it is locked out immediately.
+    if (admin.status !== "ACTIVE") {
+      throw new NotAuthorizedError("This admin account is not active.");
+    }
+    if (!isEmailAllowed(admin.email)) {
+      throw new NotAuthorizedError(
+        "This account is not authorized for the admin panel.",
+      );
+    }
   }
 
   // Every admin gets super_admin. The role/permission tables exist for the
